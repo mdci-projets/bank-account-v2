@@ -5,10 +5,12 @@ import com.mdci.bankaccount.application.mapper.BankAccountMapper;
 import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/account")
+@Validated
 public class BankAccountController {
 
     private final IBankAccountService accountService;

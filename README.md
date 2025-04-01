@@ -78,7 +78,7 @@ mvn clean test
 - [x] Créer la persistance avec JPA
 - [x] Ajout de DTOs avec MapStruct
 - [x] Exposer l'API REST (Spring Boot)
-- [ ] Validation des entrées via @Valid
+- [x] Validation des entrées via @Valid
 - [ ] Tests d'intégration SpringBootTest
 - [ ] Containerisation Docker
 - [ ] Pipeline CI/CD complète GitLab

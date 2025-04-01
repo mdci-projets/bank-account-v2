@@ -3,7 +3,9 @@ package com.mdci.bankaccount.infrastructure.rest.controller;
 import com.mdci.bankaccount.application.dto.BankOperationRequestDTO;
 import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.in.IBankOperationService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/operations")
+@Validated
 public class BankOperationController {
 
     private final IBankOperationService operationService;
@@ -22,7 +25,7 @@ public class BankOperationController {
     @PostMapping("/{accountId}/deposit")
     public ResponseEntity<Void> deposit(
             @PathVariable String accountId,
-            @RequestBody BankOperationRequestDTO request) {
+            @Valid @RequestBody BankOperationRequestDTO request) {
         operationService.deposit(accountId, new Money(request.amount()));
         return ResponseEntity.ok().build();
     }
@@ -30,7 +33,7 @@ public class BankOperationController {
     @PostMapping("/{accountId}/withdraw")
     public ResponseEntity<Void> withdraw(
             @PathVariable String accountId,
-            @RequestBody BankOperationRequestDTO request) {
+            @Valid @RequestBody BankOperationRequestDTO request) {
         operationService.withdraw(accountId, new Money(request.amount()));
         return ResponseEntity.ok().build();
     }
