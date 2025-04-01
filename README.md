@@ -76,8 +76,8 @@ mvn clean test
 - [x] Extraire une factory `BankOperationFactory` pour injecter `Clock` et UUID
 - [x] Développer la couche service avec `BankAccountService` & `BankOperationService`
 - [x] Créer la persistance avec JPA
-- [ ] Ajout de DTOs avec MapStruct
-- [ ] Exposer l'API REST (Spring Boot)
+- [x] Ajout de DTOs avec MapStruct
+- [x] Exposer l'API REST (Spring Boot)
 - [ ] Validation des entrées via @Valid
 - [ ] Tests d'intégration SpringBootTest
 - [ ] Containerisation Docker
