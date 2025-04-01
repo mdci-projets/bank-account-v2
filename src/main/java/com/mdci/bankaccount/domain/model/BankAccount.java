@@ -3,27 +3,20 @@ package com.mdci.bankaccount.domain.model;
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
 
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BankAccount {
     private final String id;
-    private final Clock clock;
     private BigDecimal balance;
-
     private final List<BankOperation> operations;
+    private final BankOperationFactory operationFactory;
 
-    public BankAccount() {
-        this(UUID.randomUUID().toString(), Clock.systemUTC());
-    }
-
-    public BankAccount(String id, Clock clock) {
+    public BankAccount(String id, BankOperationFactory operationFactory) {
         this.id = id;
-        this.clock = clock;
         this.balance = BigDecimal.ZERO;
         this.operations = new ArrayList<>();
+        this.operationFactory = operationFactory;
     }
 
     public String getId() {
@@ -40,7 +33,7 @@ public class BankAccount {
 
     public BankOperation deposit(Money amount) {
         this.balance = this.balance.add(amount.amount());
-        BankOperation operation = BankOperation.deposit(amount, clock);
+        BankOperation operation = operationFactory.deposit(amount);
         this.operations.add(operation);
         return operation;
     }
@@ -51,7 +44,7 @@ public class BankAccount {
             throw new InsufficientBalanceException("Solde insuffisant.");
         }
         this.balance = newBalance;
-        BankOperation operation = BankOperation.withdrawal(amount, clock);
+        BankOperation operation = operationFactory.withdrawal(amount);
         this.operations.add(operation);
         return operation;
     }

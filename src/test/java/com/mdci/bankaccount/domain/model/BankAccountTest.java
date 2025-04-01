@@ -17,10 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class BankAccountTest {
 
     private BankAccount account;
+    private Clock fixedClock;
+    private BankOperationFactory operationFactory;
 
     @BeforeEach
     void setUp() {
-        account = new BankAccount();
+        fixedClock = Clock.fixed(Instant.parse("2025-01-01T10:00:00Z"), ZoneOffset.UTC);
+        operationFactory = new BankOperationFactory(fixedClock);
+        account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
     }
 
     @Test
@@ -84,13 +88,15 @@ class BankAccountTest {
     void shouldReturnUnmodifiableHistoryList() {
         // Given
         Clock fixedClock = Clock.fixed(Instant.parse("2025-01-01T10:00:00Z"), ZoneOffset.UTC);
-        BankAccount account = new BankAccount(UUID.randomUUID().toString(), fixedClock);
+        operationFactory = new BankOperationFactory(fixedClock);
+        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
+
         account.deposit(new Money(BigDecimal.valueOf(100)));
 
         // When / Then
         assertThrows(UnsupportedOperationException.class, () -> {
             account.getHistory().add(
-                    BankOperation.deposit(new Money(BigDecimal.valueOf(50)), fixedClock)
+                    operationFactory.deposit(new Money(BigDecimal.valueOf(50)))
             );
         });
     }
@@ -98,7 +104,8 @@ class BankAccountTest {
     @Test
     void shouldRegisterDepositAtFixedDate() {
         Clock fixedClock = Clock.fixed(Instant.parse("2025-01-01T10:00:00Z"), ZoneOffset.UTC);
-        BankAccount account = new BankAccount(UUID.randomUUID().toString(), fixedClock);
+        operationFactory = new BankOperationFactory(fixedClock);
+        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
 
         account.deposit(new Money(BigDecimal.valueOf(100)));
 

@@ -3,9 +3,7 @@ package com.mdci.bankaccount.domain.model;
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
 
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public record BankOperation(String id, OperationType type, Money amount, LocalDateTime timestamp) {
 
@@ -19,24 +17,6 @@ public record BankOperation(String id, OperationType type, Money amount, LocalDa
         if (timestamp == null) {
             throw new InvalidAmountException("La date de l'opération est requise.");
         }
-    }
-
-    public static BankOperation deposit(Money amount, Clock clock) {
-        return new BankOperation(
-                UUID.randomUUID().toString(),
-                OperationType.DEPOSIT,
-                amount,
-                LocalDateTime.now(clock)
-        );
-    }
-
-    public static BankOperation withdrawal(Money amount, Clock clock) {
-        return new BankOperation(
-                UUID.randomUUID().toString(),
-                OperationType.WITHDRAWAL,
-                amount,
-                LocalDateTime.now(clock)
-        );
     }
 
     public BigDecimal value() {

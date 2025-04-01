@@ -20,9 +20,10 @@ class BankOperationTest {
     void shouldCreateDepositOperationWithValidAmountAndClock() {
         // Given
         Money amount = new Money(BigDecimal.valueOf(100));
+        BankOperationFactory operationFactory = new BankOperationFactory(fixedClock);
 
         // When
-        BankOperation operation = BankOperation.deposit(amount, fixedClock);
+        BankOperation operation = operationFactory.deposit(amount);
 
         // Then
         assertEquals(BankOperation.OperationType.DEPOSIT, operation.type());
@@ -78,5 +79,6 @@ class BankOperationTest {
                 new BankOperation(" ", BankOperation.OperationType.DEPOSIT, amount, LocalDateTime.now())
         );
     }
+
 }
 
