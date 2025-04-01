@@ -1,4 +1,4 @@
-package com.mdci.bankaccount.domain.service;
+package com.mdci.bankaccount.application.service;
 
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
 import com.mdci.bankaccount.domain.model.BankAccount;

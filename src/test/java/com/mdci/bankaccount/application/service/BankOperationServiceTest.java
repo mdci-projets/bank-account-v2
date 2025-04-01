@@ -1,8 +1,11 @@
-package com.mdci.bankaccount.domain.service;
+package com.mdci.bankaccount.application.service;
 
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
-import com.mdci.bankaccount.domain.model.*;
+import com.mdci.bankaccount.domain.model.BankAccount;
+import com.mdci.bankaccount.domain.model.BankOperation;
+import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class BankOperationServiceTest {
