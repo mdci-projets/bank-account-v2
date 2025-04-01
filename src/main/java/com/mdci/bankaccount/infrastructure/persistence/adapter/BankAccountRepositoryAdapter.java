@@ -6,11 +6,9 @@ import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankAccountEntityMapper;
-import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
 public class BankAccountRepositoryAdapter implements IBankAccountRepository {
     private final BankAccountJpaRepository jpaRepository;
     private final BankAccountEntityMapper mapper;

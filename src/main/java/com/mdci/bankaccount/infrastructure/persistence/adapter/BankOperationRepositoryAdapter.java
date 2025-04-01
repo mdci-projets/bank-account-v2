@@ -8,14 +8,12 @@ import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntit
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankOperationJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankOperationEntityMapper;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 public class BankOperationRepositoryAdapter implements IBankOperationRepository {
 
     private final BankOperationJpaRepository operationRepository;
