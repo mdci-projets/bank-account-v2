@@ -72,7 +72,7 @@ mvn clean test
 
 ## 🛠️ En cours / TODO
 - [x] Créer la logique métier autour du compte bancaire
-- [ ] Ajout des historiques d'opérations pour les comptes
+- [x] Ajout des historiques d'opérations pour les comptes
 - [ ] Extraire une factory `BankOperationFactory` pour injecter `Clock` et UUID
 - [ ] Développer la couche service avec `BankAccountService` & `BankOperationService`
 - [ ] Créer la la persistance avec JPA
