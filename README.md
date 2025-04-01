@@ -71,10 +71,13 @@ mvn clean test
 ```
 
 ## 🛠️ En cours / TODO
-- [ ] Créer la logique métier autour du compte bancaire
+- [x] Créer la logique métier autour du compte bancaire
+- [ ] Ajout des historiques d'opérations pour les comptes
+- [ ] Extraire une factory `BankOperationFactory` pour injecter `Clock` et UUID
+- [ ] Développer la couche service avec `BankAccountService` & `BankOperationService`
 - [ ] Créer la la persistance avec JPA
-- [ ] Exposer l'API REST (Spring Boot)
 - [ ] Ajout de DTOs avec MapStruct
+- [ ] Exposer l'API REST (Spring Boot)
 - [ ] Validation des entrées via @Valid
 - [ ] Tests d'intégration SpringBootTest
 - [ ] Containerisation Docker
