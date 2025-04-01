@@ -3,6 +3,8 @@ package com.mdci.bankaccount.domain.model;
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,5 +49,35 @@ public class BankAccount {
         BankOperation operation = operationFactory.withdrawal(amount);
         this.operations.add(operation);
         return operation;
+    }
+
+    public BigDecimal computeBalanceUntil(LocalDate date) {
+        return operations.stream()
+                .filter(op -> !op.timestamp().toLocalDate().isAfter(date))
+                .map(BankOperation::value)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal computeBalanceFromOperations(List<BankOperation> operations) {
+        return operations.stream()
+                .map(BankOperation::value)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public static BankAccount forTest(String accountId, BankOperationFactory factory, List<BankOperation> operations) {
+        BankAccount account = new BankAccount(accountId, factory);
+
+        for (BankOperation op : operations) {
+            switch (op.type()) {
+                case DEPOSIT -> account.deposit(op.amount());
+                case WITHDRAWAL -> account.withdraw(op.amount());
+            }
+        }
+
+        return account;
+    }
+
+    public static BankAccount forTest(String accountId, Clock clock, List<BankOperation> operations) {
+        return forTest(accountId, new BankOperationFactory(clock), operations);
     }
 }

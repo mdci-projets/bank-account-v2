@@ -74,7 +74,7 @@ mvn clean test
 - [x] Créer la logique métier autour du compte bancaire
 - [x] Ajout des historiques d'opérations pour les comptes
 - [x] Extraire une factory `BankOperationFactory` pour injecter `Clock` et UUID
-- [ ] Développer la couche service avec `BankAccountService` & `BankOperationService`
+- [x] Développer la couche service avec `BankAccountService` & `BankOperationService`
 - [ ] Créer la la persistance avec JPA
 - [ ] Ajout de DTOs avec MapStruct
 - [ ] Exposer l'API REST (Spring Boot)
