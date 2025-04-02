@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.infrastructure.persistence.adapter;
 
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
+import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.BankOperation;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
@@ -29,13 +30,14 @@ public class BankOperationRepositoryAdapter implements IBankOperationRepository 
     }
 
     @Override
-    public BankOperation save(BankOperation operation) {
-        BankAccountEntity account = accountRepository.findById(operation.id())
-                .orElseThrow(() -> new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : " + operation.id()));
-
-        BankOperationEntity savedEntity = operationRepository.save(mapper.toEntity(operation, account));
-        return mapper.toDomain(savedEntity);
+    public BankOperation save(BankAccount account, BankOperation operation) {
+        BankAccountEntity accountEntity = accountRepository.findById(account.getId())
+                .orElseThrow(() -> new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : " + account.getId()));
+        BankOperationEntity entity = mapper.toEntity(operation, accountEntity);
+        BankOperationEntity saved = operationRepository.save(entity);
+        return mapper.toDomain(saved);
     }
+
 
     @Override
     public List<BankOperation> findAllByAccountIdUntilDate(String accountId, LocalDate date) {

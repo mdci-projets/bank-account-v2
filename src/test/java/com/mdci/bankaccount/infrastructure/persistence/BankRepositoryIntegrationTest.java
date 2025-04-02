@@ -81,4 +81,26 @@ class BankRepositoryIntegrationTest {
         assertEquals(BankOperation.OperationType.DEPOSIT, ops.get(0).type());
         assertEquals(new Money(BigDecimal.valueOf(100)), ops.get(0).amount());
     }
+
+    @Test
+    void shouldSaveOperationUsingRepositoryAdapter() {
+        // Given
+        String accountId = UUID.randomUUID().toString();
+        BankAccount account = new BankAccount(accountId, factory);
+        accountRepository.save(account);
+
+        BankOperation deposit = account.deposit(new Money(BigDecimal.valueOf(200)));
+
+        // When
+        BankOperation saved = ((BankOperationRepositoryAdapter) operationRepository).save(account, deposit);
+
+        // Then
+        assertNotNull(saved);
+        assertEquals(BankOperation.OperationType.DEPOSIT, saved.type());
+        assertEquals(new Money(BigDecimal.valueOf(200)), saved.amount());
+
+        List<BankOperation> found = operationRepository.findAllByAccountIdUntilDate(accountId, LocalDate.of(2025, 1, 2));
+        assertEquals(1, found.size());
+        assertEquals(new Money(BigDecimal.valueOf(200)), found.get(0).amount());
+    }
 }

@@ -26,14 +26,14 @@ public class BankOperationService implements IBankOperationService {
     public void deposit(String accountId, Money amount) {
         BankAccount account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : " + accountId));
-        operationRepository.save(account.deposit(amount));
+        operationRepository.save(account, account.deposit(amount));
     }
 
     @Override
     public void withdraw(String accountId, Money amount) {
         BankAccount account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : " + accountId));
-        operationRepository.save(account.withdraw(amount));
+        operationRepository.save(account, account.withdraw(amount));
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.mdci.bankaccount.infrastructure.persistence.adapter;
 
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
+import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.BankOperation;
+import com.mdci.bankaccount.domain.model.BankOperationFactory;
 import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntity;
@@ -27,6 +29,8 @@ class BankOperationRepositoryAdapterTest {
     private BankOperationEntityMapper mapper;
     private BankOperationRepositoryAdapter adapter;
 
+    private BankOperationFactory factory;
+
     private BankAccountEntity fakeAccount;
 
     @BeforeEach
@@ -38,11 +42,16 @@ class BankOperationRepositoryAdapterTest {
 
         fakeAccount = new BankAccountEntity();
         fakeAccount.setId("acc-123");
+
+        factory = new BankOperationFactory(Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC));
     }
 
     @Test
     void shouldSaveOperationForExistingAccount() {
         // Given
+        String accountId = "account-id";
+        BankAccount account = new BankAccount(accountId, factory);
+
         String operationId = UUID.randomUUID().toString();
         LocalDateTime timestamp = LocalDateTime.of(2025, 1, 1, 10, 0);
 
@@ -53,7 +62,7 @@ class BankOperationRepositoryAdapterTest {
                 timestamp
         );
 
-        when(accountJpaRepository.findById(operationId)).thenReturn(Optional.of(fakeAccount));
+        when(accountJpaRepository.findById(accountId)).thenReturn(Optional.of(fakeAccount));
 
         BankOperationEntity savedEntity = new BankOperationEntity();
         savedEntity.setId(operationId);
@@ -65,7 +74,7 @@ class BankOperationRepositoryAdapterTest {
         when(operationJpaRepository.save(any())).thenReturn(savedEntity);
 
         // When
-        BankOperation result = adapter.save(operation);
+        BankOperation result = adapter.save(account, operation);
 
         // Then
         assertNotNull(result);
@@ -79,18 +88,20 @@ class BankOperationRepositoryAdapterTest {
     @Test
     void shouldThrowIfAccountNotFoundWhenSavingOperation() {
         // Given
-        String operationId = "not-found";
+        String accountId = "non-existent-account-id";
+        BankAccount account = new BankAccount(accountId, factory);
+
         BankOperation operation = new BankOperation(
-                operationId,
+                "operationId",
                 BankOperation.OperationType.WITHDRAWAL,
                 new Money(BigDecimal.valueOf(100)),
                 LocalDateTime.of(2025, 1, 1, 11, 0)
         );
 
-        when(accountJpaRepository.findById(operationId)).thenReturn(Optional.empty());
+        when(accountJpaRepository.findById(accountId)).thenReturn(Optional.empty());
 
         // Then
-        assertThrows(AccountNotFoundException.class, () -> adapter.save(operation));
+        assertThrows(AccountNotFoundException.class, () -> adapter.save(account, operation));
         verify(operationJpaRepository, never()).save(any());
     }
 

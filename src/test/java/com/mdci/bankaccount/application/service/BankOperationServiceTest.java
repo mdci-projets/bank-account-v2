@@ -50,7 +50,7 @@ class BankOperationServiceTest {
 
         // Then
         assertEquals(BigDecimal.valueOf(200), account.getBalance());
-        verify(operationRepository).save(any(BankOperation.class));
+        verify(operationRepository).save(any(BankAccount.class), any(BankOperation.class));
     }
 
     @Test
@@ -66,7 +66,7 @@ class BankOperationServiceTest {
 
         // Then
         assertEquals(BigDecimal.valueOf(100), account.getBalance());
-        verify(operationRepository).save(any(BankOperation.class));
+        verify(operationRepository).save(any(BankAccount.class), any(BankOperation.class));
     }
 
     @Test
@@ -80,7 +80,7 @@ class BankOperationServiceTest {
         assertThrows(InsufficientBalanceException.class, () ->
                 service.withdraw(accountId, new Money(BigDecimal.valueOf(100)))
         );
-        verify(operationRepository, never()).save(any());
+        verify(operationRepository, never()).save(any(), any());
     }
 
     @Test
