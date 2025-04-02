@@ -13,6 +13,11 @@ import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaReposit
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankOperationJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankAccountEntityMapper;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankOperationEntityMapper;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -67,6 +72,24 @@ public class BeanConfiguration {
                                                             BankAccountJpaRepository accJpa,
                                                             BankOperationEntityMapper mapper) {
         return new BankOperationRepositoryAdapter(opJpa, accJpa, mapper);
+    }
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("API de Gestion Bancaire")
+                        .version("1.0")
+                        .description("Documentation de l’API pour la gestion des opérations bancaires")
+                        .contact(new Contact()
+                                .name("Support Développement")
+                                .email("support@bankapi.com"))
+                        .license(new License()
+                                .name("Licence Apache 2.0")
+                                .url("https://www.apache.org/licenses/LICENSE-2.0")))
+                .externalDocs(new ExternalDocumentation()
+                        .description("Documentation complète")
+                        .url("https://bankapi.com/docs"));
     }
 }
 

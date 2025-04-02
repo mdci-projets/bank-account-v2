@@ -82,7 +82,7 @@ mvn clean test
 - [ ] Tests d'intégration SpringBootTest
 - [ ] Containerisation Docker
 - [ ] Pipeline CI/CD complète GitLab
-- [ ] Documentation Swagger
+- [x] Documentation Swagger
 
 ## Auteur
 Ce projet est développé par Youssef Massaoudi dans le cadre d’un kata technique avec engagement qualité élevé
