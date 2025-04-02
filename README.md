@@ -79,9 +79,9 @@ mvn clean test
 - [x] Ajout de DTOs avec MapStruct
 - [x] Exposer l'API REST (Spring Boot)
 - [x] Validation des entrées via @Valid
-- [ ] Tests d'intégration SpringBootTest
+- [x] Tests d'intégration SpringBootTest
 - [ ] Containerisation Docker
-- [ ] Pipeline CI/CD complète GitLab
+- [x] Pipeline CI/CD complète GitLab
 - [x] Documentation Swagger
 
 ## Auteur

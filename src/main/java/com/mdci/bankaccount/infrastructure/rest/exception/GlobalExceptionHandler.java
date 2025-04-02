@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,14 +38,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidation(MethodArgumentNotValidException ex) {
-        String messages = ex.getBindingResult()
+    public ResponseEntity<Map<String, List<ErreurValidationDTO>>> handleValidation(MethodArgumentNotValidException ex) {
+        List<ErreurValidationDTO> erreurs = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + " : " + error.getDefaultMessage())
-                .collect(Collectors.joining(" | "));
+                .map(err -> new ErreurValidationDTO(err.getField(), err.getDefaultMessage()))
+                .toList();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messages);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("erreurs", erreurs));
+    }
+
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "valeur attendue";
+        String msg = "La date fournie est invalide. Format attendu : yyyy-MM-dd (%s).".formatted(expectedType);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(msg);
     }
 }
 

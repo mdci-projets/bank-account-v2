@@ -7,6 +7,11 @@ spring:
   messages:
     basename: ValidationMessages_fr
     encoding: UTF-8
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
   mvc:
     locale: fr
     locale-resolver: fixed
