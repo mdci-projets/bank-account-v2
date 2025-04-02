@@ -1,9 +1,9 @@
 package com.mdci.bankaccount.infrastructure.config;
 
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
-import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import com.mdci.bankaccount.application.service.BankAccountService;
 import com.mdci.bankaccount.application.service.BankOperationService;
+import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import com.mdci.bankaccount.domain.port.in.IBankOperationService;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
@@ -32,10 +32,11 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IBankAccountService bankAccountService(IBankAccountRepository repository,
+    public IBankAccountService bankAccountService(IBankOperationRepository operationRepository,
+                                                  IBankAccountRepository repository,
                                                   BankOperationFactory operationFactory,
                                                   Clock clock) {
-        return new BankAccountService(repository, operationFactory, clock);
+        return new BankAccountService(operationRepository, repository, operationFactory, clock);
     }
 
     @Bean

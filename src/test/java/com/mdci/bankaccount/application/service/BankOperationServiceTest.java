@@ -58,8 +58,12 @@ class BankOperationServiceTest {
         // Given
         String accountId = "acc-123";
         BankAccount account = new BankAccount(accountId, operationFactory);
-        account.deposit(new Money(BigDecimal.valueOf(150)));
+        BankOperation previousDeposit = operationFactory.deposit(
+                new Money(BigDecimal.valueOf(150)));
+        List<BankOperation> operations = List.of(previousDeposit);
+
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(operationRepository.findAllByAccountId(accountId)).thenReturn(operations);
 
         // When
         service.withdraw(accountId, new Money(BigDecimal.valueOf(50)));

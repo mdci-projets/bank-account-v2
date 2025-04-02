@@ -64,6 +64,18 @@ public class BankAccount {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public void loadOperations(List<BankOperation> operations) {
+        if (operations == null) {
+            throw new IllegalArgumentException("La liste des opérations ne peut pas être nulle.");
+        }
+
+        this.operations.clear();
+        this.operations.addAll(operations);
+
+        // Recalcule le solde à partir de l'historique complet
+        this.balance = computeBalanceFromOperations(operations);
+    }
+
     public static BankAccount forTest(String accountId, BankOperationFactory factory, List<BankOperation> operations) {
         BankAccount account = new BankAccount(accountId, factory);
 
