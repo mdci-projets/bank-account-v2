@@ -4,6 +4,12 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
+  messages:
+    basename: ValidationMessages_fr
+    encoding: UTF-8
+  mvc:
+    locale: fr
+    locale-resolver: fixed
 
   h2:
     console:
@@ -20,5 +26,5 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
