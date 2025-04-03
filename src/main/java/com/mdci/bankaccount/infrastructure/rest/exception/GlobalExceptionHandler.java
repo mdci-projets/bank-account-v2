@@ -3,6 +3,7 @@ package com.mdci.bankaccount.infrastructure.rest.exception;
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,24 +20,18 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(AccountNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleNotFound(AccountNotFoundException ex, HttpServletRequest request) {
+        return buildResponse("AccountNotFound", ex.getMessage(), HttpStatus.NOT_FOUND, request.getRequestURI());
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
-    public ResponseEntity<String> handleBalanceError(InsufficientBalanceException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleBalanceError(InsufficientBalanceException ex, HttpServletRequest request) {
+        return buildResponse("InsufficientBalance", ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
     }
 
     @ExceptionHandler(InvalidAmountException.class)
-    public ResponseEntity<String> handleInvalidAmount(InvalidAmountException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleUnexpected(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erreur inattendue : " + ex.getMessage());
+    public ResponseEntity<ApiErrorResponse> handleInvalidAmount(InvalidAmountException ex, HttpServletRequest request) {
+        return buildResponse("InvalidAmount", ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -50,12 +47,32 @@ public class GlobalExceptionHandler {
                 .body(Map.of("erreurs", erreurs));
     }
 
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "valeur attendue";
-        String msg = "La date fournie est invalide. Format attendu : yyyy-MM-dd (%s).".formatted(expectedType);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(msg);
+    public ResponseEntity<ApiErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String paramName = ex.getName();
+        String message;
+
+        if ("date".equals(paramName) && ex.getRequiredType() == LocalDate.class) {
+            message = "La date fournie est invalide. Format attendu : yyyy-MM-dd (LocalDate).";
+        } else {
+            message = "La valeur fournie est invalide. Type attendu : " + ex.getRequiredType().getSimpleName();
+        }
+        return buildResponse("TypeMismatch", message, HttpStatus.BAD_REQUEST, request.getRequestURI());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
+        return buildResponse("UnexpectedError", "Erreur inattendue : " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI());
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildResponse(String error, String message, HttpStatus status, String path) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                error,
+                message,
+                path,
+                status.value(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(status).body(response);
     }
 }
-
