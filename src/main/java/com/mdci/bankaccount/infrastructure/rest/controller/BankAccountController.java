@@ -1,12 +1,17 @@
 package com.mdci.bankaccount.infrastructure.rest.controller;
 
 import com.mdci.bankaccount.application.dto.BankAccountResponseDTO;
+import com.mdci.bankaccount.application.dto.CreateAccountRequestDTO;
 import com.mdci.bankaccount.application.mapper.BankAccountMapper;
 import com.mdci.bankaccount.domain.model.BankAccount;
+import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +30,22 @@ public class BankAccountController {
         this.mapper = mapper;
     }
 
-    @Operation(summary = "Créer un nouveau compte bancaire", responses = {
-            @ApiResponse(responseCode = "200", description = "Compte créé avec succès")
-    })
+    @Operation(
+            summary = "Créer un nouveau compte bancaire",
+            description = "Crée un compte bancaire avec un solde initial et un découvert autorisé optionnel",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Compte créé avec succès",
+                            content = @Content(schema = @Schema(implementation = BankAccountResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Requête invalide",
+                            content = @Content)
+            }
+    )
     @PostMapping
-    public ResponseEntity<BankAccountResponseDTO> createAccount() {
-        BankAccount account = accountService.createAccount();
+    public ResponseEntity<BankAccountResponseDTO> createAccount(@RequestBody @Valid CreateAccountRequestDTO request) {
+        BankAccount account = accountService.createAccount(
+                new Money(request.initialBalance()),
+                new Money(request.authorizedOverdraft())
+        );
         return ResponseEntity.ok(mapper.toResponseDTO(account));
     }
 
