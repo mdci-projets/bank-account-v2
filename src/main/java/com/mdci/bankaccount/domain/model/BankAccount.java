@@ -84,8 +84,8 @@ public class BankAccount {
         this.balance = computeBalanceFromOperations(operations);
     }
 
-    public static BankAccount forTest(String accountId, BankOperationFactory factory, List<BankOperation> operations) {
-        BankAccount account = new BankAccount(accountId, factory);
+    public static BankAccount forTest(String accountId, BankOperationFactory factory, Money overdraft, List<BankOperation> operations) {
+        BankAccount account = new BankAccount(accountId, factory, new Money(BigDecimal.ZERO), overdraft);
 
         for (BankOperation op : operations) {
             switch (op.type()) {
@@ -98,6 +98,6 @@ public class BankAccount {
     }
 
     public static BankAccount forTest(String accountId, Clock clock, List<BankOperation> operations) {
-        return forTest(accountId, new BankOperationFactory(clock), operations);
+        return forTest(accountId, new BankOperationFactory(clock), new Money(BigDecimal.ZERO), operations);
     }
 }

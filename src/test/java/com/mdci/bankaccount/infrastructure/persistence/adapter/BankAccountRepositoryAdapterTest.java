@@ -63,7 +63,7 @@ class BankAccountRepositoryAdapterTest {
         entity.setId(accountId);
         entity.setCurrency("EUR");
 
-        when(jpaRepository.findById(accountId)).thenReturn(Optional.of(entity));
+        when(jpaRepository.findByIdWithOperations(accountId)).thenReturn(Optional.of(entity));
 
         // When
         Optional<BankAccount> result = adapter.findById(accountId);

@@ -1,6 +1,8 @@
 package com.mdci.bankaccount.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,9 @@ public class BankAccountEntity {
     private String id;
 
     private String currency;
+
+    @Column(name = "authorized_overdraft", nullable = false)
+    private BigDecimal authorizedOverdraft = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<BankOperationEntity> operations = new ArrayList<>();
@@ -38,6 +43,14 @@ public class BankAccountEntity {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public BigDecimal getAuthorizedOverdraft() {
+        return authorizedOverdraft;
+    }
+
+    public void setAuthorizedOverdraft(BigDecimal authorizedOverdraft) {
+        this.authorizedOverdraft = authorizedOverdraft;
     }
 
     public List<BankOperationEntity> getOperations() {

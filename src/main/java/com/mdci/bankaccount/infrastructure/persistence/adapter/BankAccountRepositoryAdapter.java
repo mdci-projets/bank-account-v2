@@ -24,9 +24,7 @@ public class BankAccountRepositoryAdapter implements IBankAccountRepository {
 
     @Override
     public BankAccount save(BankAccount account) {
-        BankAccountEntity entity = new BankAccountEntity();
-        entity.setId(account.getId());
-        entity.setCurrency("EUR");
+        BankAccountEntity entity = mapper.toEntity(account);
 
         BankAccountEntity saved = jpaRepository.save(entity);
         return new BankAccount(saved.getId(), operationFactory);
@@ -34,7 +32,7 @@ public class BankAccountRepositoryAdapter implements IBankAccountRepository {
 
     @Override
     public Optional<BankAccount> findById(String id) {
-        return jpaRepository.findById(id)
-                .map(entity -> mapper.toDomainWithoutOperations(entity, operationFactory));
+        return jpaRepository.findByIdWithOperations(id)
+                .map(entity -> mapper.toDomainWithBalanceOnly(entity, operationFactory));
     }
 }
