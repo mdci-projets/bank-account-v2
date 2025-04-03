@@ -3,11 +3,13 @@ package com.mdci.bankaccount.application.service;
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
 import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -38,11 +40,11 @@ class BankAccountServiceTest {
     @Test
     void shouldCreateAccountAndSaveIt() {
         // When
-        BankAccount account = service.createAccount();
+        BankAccount account = service.createAccount(new Money(BigDecimal.ZERO), new Money(BigDecimal.ZERO));
 
         // Then
         assertNotNull(account.getId());
-        assertEquals(0, account.getBalance().compareTo(java.math.BigDecimal.ZERO));
+        assertEquals(0, account.getBalance().compareTo(BigDecimal.ZERO));
         verify(repository).save(account);
     }
 

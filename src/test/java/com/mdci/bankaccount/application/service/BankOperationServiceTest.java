@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -126,4 +127,53 @@ class BankOperationServiceTest {
                 service.getBalanceAtDate("unknown", LocalDate.now())
         );
     }
+
+    @Test
+    void shouldAllowWithdrawalWhenWithinAuthorizedOverdraft() {
+        // Given
+        String accountId = UUID.randomUUID().toString();
+        BigDecimal overdraft = BigDecimal.valueOf(100);
+        BigDecimal initialBalance = BigDecimal.ZERO;
+
+        BankAccount account = new BankAccount(
+                accountId,
+                operationFactory,
+                new Money(initialBalance),
+                new Money(overdraft)
+        );
+
+        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(operationRepository.findAllByAccountId(accountId)).thenReturn(new ArrayList<>());
+
+        // When
+        service.withdraw(accountId, new Money(BigDecimal.valueOf(100)));
+
+        // Then
+        assertEquals(BigDecimal.valueOf(-100), account.getBalance());
+        verify(operationRepository, times(1)).save(any(), any());
+    }
+
+    @Test
+    void shouldThrowWhenWithdrawalExceedsAuthorizedOverdraft() {
+        // Given
+        String accountId = UUID.randomUUID().toString();
+        BankAccount account = new BankAccount(
+                accountId,
+                operationFactory,
+                new Money(BigDecimal.valueOf(0)),
+                new Money(BigDecimal.valueOf(100))
+        );
+
+        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(operationRepository.findAllByAccountId(accountId)).thenReturn(new ArrayList<>());
+
+        // Then
+        assertThrows(InsufficientBalanceException.class, () ->
+                service.withdraw(accountId, new Money(BigDecimal.valueOf(101)))
+        );
+
+        verify(operationRepository, never()).save(any(), any());
+    }
+
+
 }

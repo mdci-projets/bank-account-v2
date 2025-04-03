@@ -3,6 +3,7 @@ package com.mdci.bankaccount.integration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mdci.bankaccount.application.dto.BankOperationRequestDTO;
+import com.mdci.bankaccount.application.dto.CreateAccountRequestDTO;
 import com.mdci.bankaccount.integration.util.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,8 +48,14 @@ class BankOperationIntegrationTest {
     @Test
     void shouldDepositMoneyToAccount() throws Exception {
         // Création d’un compte
-        String json = mockMvc.perform(post("/api/account"))
-                .andReturn().getResponse().getContentAsString();
+        CreateAccountRequestDTO requestAccount = new CreateAccountRequestDTO(
+                new BigDecimal("0.00"),
+                new BigDecimal("0.00")
+        );
+        String json = mockMvc.perform(post("/api/account")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestAccount)))
+          .andReturn().getResponse().getContentAsString();
         String id = objectMapper.readTree(json).get("id").asText();
 
         // Dépôt
@@ -75,9 +82,15 @@ class BankOperationIntegrationTest {
 
     @Test
     void shouldReturn400IfInvalidAmount() throws Exception {
+        CreateAccountRequestDTO requestAccount = new CreateAccountRequestDTO(
+                new BigDecimal("0.00"),
+                new BigDecimal("0.00")
+        );
         String id = objectMapper.readTree(
-                mockMvc.perform(post("/api/account"))
-                        .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
+                mockMvc.perform(post("/api/account")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestAccount)))
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8)
         ).get("id").asText();
 
         BankOperationRequestDTO request = new BankOperationRequestDTO(BigDecimal.valueOf(-100));
@@ -101,9 +114,15 @@ class BankOperationIntegrationTest {
     @Test
     void shouldReturn400IfInsufficientBalance() throws Exception {
         // Création d’un compte
+        CreateAccountRequestDTO requestCreateAccount = new CreateAccountRequestDTO(
+                new BigDecimal("0.00"),
+                new BigDecimal("0.00")
+        );
         String id = objectMapper.readTree(
-                mockMvc.perform(post("/api/account"))
-                        .andReturn().getResponse().getContentAsString()
+                mockMvc.perform(post("/api/account")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestCreateAccount)))
+                  .andReturn().getResponse().getContentAsString()
         ).get("id").asText();
 
         BankOperationRequestDTO request = new BankOperationRequestDTO(BigDecimal.valueOf(500));
@@ -118,8 +137,14 @@ class BankOperationIntegrationTest {
     @Test
     void shouldReturn400IfMissingField() throws Exception {
         // Création d’un compte
+        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+                new BigDecimal("0.00"),
+                new BigDecimal("0.00")
+        );
         String id = objectMapper.readTree(
-                mockMvc.perform(post("/api/account"))
+                mockMvc.perform(post("/api/account")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
                         .andReturn().getResponse().getContentAsString()
         ).get("id").asText();
 
@@ -134,9 +159,15 @@ class BankOperationIntegrationTest {
     @Test
     void shouldKeepAccountBalanceInSyncWithOperations() throws Exception {
         // Création d’un compte
+        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+                new BigDecimal("0.00"),
+                new BigDecimal("0.00")
+        );
         String id = objectMapper.readTree(
-                mockMvc.perform(post("/api/account"))
-                        .andReturn().getResponse().getContentAsString()
+                mockMvc.perform(post("/api/account")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andReturn().getResponse().getContentAsString()
         ).get("id").asText();
 
         // Dépôt de 500 €
@@ -160,9 +191,15 @@ class BankOperationIntegrationTest {
     @Test
     void shouldReturn400IfBalanceAtDateParamIsInvalid() throws Exception {
         // Création d’un compte
+        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+                new BigDecimal("0.00"),
+                new BigDecimal("0.00")
+        );
         String id = objectMapper.readTree(
-                mockMvc.perform(post("/api/account"))
-                        .andReturn().getResponse().getContentAsString()
+                mockMvc.perform(post("/api/account")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                   .andReturn().getResponse().getContentAsString()
         ).get("id").asText();
 
         // Appel avec une date invalide
