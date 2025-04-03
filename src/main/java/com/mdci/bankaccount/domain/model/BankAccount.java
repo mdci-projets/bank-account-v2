@@ -1,5 +1,7 @@
 package com.mdci.bankaccount.domain.model;
 
+import com.mdci.bankaccount.domain.exception.InvalidAmountException;
+
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -19,6 +21,9 @@ public class BankAccount {
     }
 
     public BankAccount(String id, BankOperationFactory operationFactory, Money initialBalance, Money authorizedOverdraft) {
+        if (initialBalance.isNegative()) {
+            throw new InvalidAmountException("Le solde initial ne peut pas être négatif.");
+        }
         this.id = id;
         this.balance = initialBalance != null ? initialBalance.amount() : BigDecimal.ZERO;
         this.operations = new ArrayList<>();
