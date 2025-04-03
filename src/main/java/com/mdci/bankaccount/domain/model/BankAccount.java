@@ -1,7 +1,5 @@
 package com.mdci.bankaccount.domain.model;
 
-import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
-
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -11,14 +9,22 @@ import java.util.List;
 public class BankAccount {
     private final String id;
     private BigDecimal balance;
+    private final Money authorizedOverdraft;
+    private final WithdrawalPolicy withdrawalPolicy;
     private final List<BankOperation> operations;
     private final BankOperationFactory operationFactory;
 
     public BankAccount(String id, BankOperationFactory operationFactory) {
+        this(id, operationFactory, new Money(BigDecimal.ZERO), new Money(BigDecimal.ZERO));
+    }
+
+    public BankAccount(String id, BankOperationFactory operationFactory, Money initialBalance, Money authorizedOverdraft) {
         this.id = id;
-        this.balance = BigDecimal.ZERO;
+        this.balance = initialBalance != null ? initialBalance.amount() : BigDecimal.ZERO;
         this.operations = new ArrayList<>();
         this.operationFactory = operationFactory;
+        this.authorizedOverdraft = authorizedOverdraft != null ? authorizedOverdraft : new Money(BigDecimal.ZERO);
+        this.withdrawalPolicy = WithdrawalPolicyFactory.create(this);
     }
 
     public String getId() {
@@ -27,6 +33,10 @@ public class BankAccount {
 
     public BigDecimal getBalance() {
         return balance;
+    }
+
+    public Money getAuthorizedOverdraft() {
+        return authorizedOverdraft;
     }
 
     public List<BankOperation> getHistory() {
@@ -41,11 +51,9 @@ public class BankAccount {
     }
 
     public BankOperation withdraw(Money amount) {
-        BigDecimal newBalance = this.balance.subtract(amount.amount());
-        if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InsufficientBalanceException("Solde insuffisant.");
-        }
-        this.balance = newBalance;
+        withdrawalPolicy.checkWithdrawal(this, amount);
+        this.balance = this.balance.subtract(amount.amount());
+        ;
         BankOperation operation = operationFactory.withdrawal(amount);
         this.operations.add(operation);
         return operation;
