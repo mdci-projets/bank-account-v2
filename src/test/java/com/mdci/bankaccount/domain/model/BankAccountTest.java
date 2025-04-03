@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.domain.model;
 
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
+import com.mdci.bankaccount.domain.exception.InvalidAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BankAccountTest {
@@ -112,5 +115,53 @@ class BankAccountTest {
         BankOperation op = account.getHistory().get(0);
         assertEquals(LocalDateTime.of(2025, 1, 1, 10, 0), op.timestamp());
     }
+
+    @Test
+    void should_allow_withdrawal_with_authorized_overdraft() {
+        // Given
+        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, new Money(BigDecimal.valueOf(100)), new Money(BigDecimal.valueOf(50)));
+
+        // When
+        account.withdraw(new Money(BigDecimal.valueOf(150)));
+
+        // Then
+        assertThat(account.getBalance()).isEqualTo(BigDecimal.valueOf(-50));
+    }
+
+    @Test
+    void should_throw_if_withdrawal_exceeds_overdraft_limit() {
+        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, new Money(BigDecimal.valueOf(100)), new Money(BigDecimal.valueOf(50)));
+
+        assertThatThrownBy(() -> account.withdraw(new Money(BigDecimal.valueOf(151))))
+                .isInstanceOf(InsufficientBalanceException.class)
+                .hasMessageContaining("Limite de découvert atteinte");
+    }
+
+    @Test
+    void shouldInitializeBalanceAndOverdraftToZeroByDefault() {
+        // When
+        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
+
+        // Then
+        assertEquals(BigDecimal.ZERO, account.getBalance(), "Le solde initial doit être zéro.");
+        assertEquals(BigDecimal.ZERO, account.getAuthorizedOverdraft().amount(), "Le découvert autorisé doit être zéro.");
+    }
+
+    @Test
+    void should_throw_if_initial_balance_is_negative() {
+        assertThatThrownBy(() -> new BankAccount(UUID.randomUUID().toString(), operationFactory, new Money(BigDecimal.valueOf(-100)), new Money(BigDecimal.ZERO)))
+                .isInstanceOf(InvalidAmountException.class);
+    }
+
+    @Test
+    void should_create_account_with_authorized_overdraft() {
+        // When
+        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, new Money(BigDecimal.valueOf(50)), new Money(BigDecimal.valueOf(100)));
+
+        // Then
+        assertThat(account.getBalance()).isEqualTo(BigDecimal.valueOf(50));
+        assertThat(account.getAuthorizedOverdraft().amount()).isEqualTo(BigDecimal.valueOf(100));
+    }
+
 }
 
