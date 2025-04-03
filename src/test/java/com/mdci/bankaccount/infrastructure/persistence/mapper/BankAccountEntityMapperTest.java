@@ -99,9 +99,8 @@ class BankAccountEntityMapperTest {
         assertThat(domain.getAuthorizedOverdraft().amount()).isEqualByComparingTo("100.00");
         assertThat(domain.getHistory()).hasSize(2);
 
-        // TODO fixer ce bug afin de conserver l'identifiant et la date des opérations lors de la reconstruction
-        //assertThat(domain.getHistory().get(0).id()).isEqualTo("op1");
-        //assertThat(domain.getHistory().get(0).timestamp()).isEqualTo(LocalDateTime.parse("2025-04-10T14:30"));
+        assertThat(domain.getHistory().get(0).id()).isEqualTo("op1");
+        assertThat(domain.getHistory().get(0).timestamp()).isEqualTo(LocalDateTime.parse("2025-04-10T14:30"));
         assertThat(domain.getHistory().get(0).type()).isEqualTo(BankOperation.OperationType.DEPOSIT);
         assertThat(domain.getHistory().get(0).amount().amount()).isEqualByComparingTo("100.00");
     }

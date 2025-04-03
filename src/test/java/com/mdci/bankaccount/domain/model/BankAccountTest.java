@@ -163,5 +163,52 @@ class BankAccountTest {
         assertThat(account.getAuthorizedOverdraft().amount()).isEqualTo(BigDecimal.valueOf(100));
     }
 
+    @Test
+    void shouldApplyDepositOperationCorrectly() {
+        // Given
+        Clock fixedClock = Clock.fixed(Instant.parse("2025-04-10T14:30:00Z"), ZoneOffset.UTC);
+        BankOperationFactory factory = new BankOperationFactory(fixedClock);
+        BankAccount account = new BankAccount("acc-123", factory);
+
+        BankOperation operation = new BankOperation(
+                "op-001",
+                BankOperation.OperationType.DEPOSIT,
+                new Money(BigDecimal.valueOf(100)),
+                LocalDateTime.of(2025, 4, 10, 14, 30)
+        );
+
+        // When
+        account.applyOperation(operation);
+
+        // Then
+        assertEquals(BigDecimal.valueOf(100), account.getBalance());
+        assertEquals(1, account.getHistory().size());
+        assertEquals("op-001", account.getHistory().get(0).id());
+        assertEquals(LocalDateTime.of(2025, 4, 10, 14, 30), account.getHistory().get(0).timestamp());
+    }
+
+    @Test
+    void shouldApplyWithdrawalOperationCorrectly() {
+        // Given
+        Clock fixedClock = Clock.fixed(Instant.parse("2025-04-10T14:30:00Z"), ZoneOffset.UTC);
+        BankOperationFactory factory = new BankOperationFactory(fixedClock);
+        BankAccount account = new BankAccount("acc-456", factory, new Money(BigDecimal.valueOf(200)), new Money(BigDecimal.ZERO));
+
+        BankOperation withdrawal = new BankOperation(
+                "op-002",
+                BankOperation.OperationType.WITHDRAWAL,
+                new Money(BigDecimal.valueOf(50)),
+                LocalDateTime.of(2025, 4, 10, 14, 30)
+        );
+
+        // When
+        account.applyOperation(withdrawal);
+
+        // Then
+        assertEquals(BigDecimal.valueOf(150), account.getBalance());
+        assertEquals(1, account.getHistory().size());
+        assertEquals("op-002", account.getHistory().get(0).id());
+    }
+
 }
 

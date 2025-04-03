@@ -59,6 +59,11 @@ public class BankAccount {
         return operation;
     }
 
+    public void applyOperation(BankOperation operation) {
+        this.balance = this.balance.add(operation.value());
+        this.operations.add(operation);
+    }
+
     public BigDecimal computeBalanceUntil(LocalDate date) {
         return operations.stream()
                 .filter(op -> !op.timestamp().toLocalDate().isAfter(date))
@@ -87,13 +92,7 @@ public class BankAccount {
     public static BankAccount forTest(String accountId, BankOperationFactory factory, Money overdraft, List<BankOperation> operations) {
         BankAccount account = new BankAccount(accountId, factory, new Money(BigDecimal.ZERO), overdraft);
 
-        for (BankOperation op : operations) {
-            switch (op.type()) {
-                case DEPOSIT -> account.deposit(op.amount());
-                case WITHDRAWAL -> account.withdraw(op.amount());
-            }
-        }
-
+        operations.forEach(bankOperation -> account.applyOperation(bankOperation));
         return account;
     }
 
