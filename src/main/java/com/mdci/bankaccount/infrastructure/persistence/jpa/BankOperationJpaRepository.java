@@ -13,4 +13,6 @@ public interface BankOperationJpaRepository extends JpaRepository<BankOperationE
 
     @Query("SELECT o FROM BankOperationEntity o WHERE o.account.id = :accountId ORDER BY o.timestamp")
     List<BankOperationEntity> findAllByAccountId(String accountId);
+
+    List<BankOperationEntity> findByAccountIdAndTimestampBetween(String accountId, LocalDateTime from, LocalDateTime to);
 }

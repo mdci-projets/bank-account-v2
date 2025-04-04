@@ -56,9 +56,9 @@ public class BankOperationRepositoryAdapter implements IBankOperationRepository 
                 .collect(Collectors.toList());
     }
 
-    // TODO A implementer avec la persistance!
     @Override
     public List<BankOperation> findAllByAccountIdBetweenDates(String accountId, LocalDateTime from, LocalDateTime to) {
-        return new ArrayList<>();
+        List<BankOperationEntity> entities = operationRepository.findByAccountIdAndTimestampBetween(accountId, from, to);
+        return entities.stream().map(mapper::toDomain).toList();
     }
 }
