@@ -1,5 +1,6 @@
 package com.mdci.bankaccount.domain.model;
 
+import com.mdci.bankaccount.domain.exception.FunctionalException;
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
 
 import java.math.BigDecimal;
@@ -118,7 +119,7 @@ public class BankAccount {
 
     void loadOperations(List<BankOperation> operations) {
         if (operations == null) {
-            throw new IllegalArgumentException("La liste des opérations ne peut pas être nulle.");
+            throw new FunctionalException("La liste des opérations ne peut pas être nulle.");
         }
 
         this.operations.clear();

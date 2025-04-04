@@ -1,5 +1,7 @@
 package com.mdci.bankaccount.domain.model;
 
+import com.mdci.bankaccount.domain.exception.FunctionalException;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class BankAccountFactory {
                                      AccountType accountType,
                                      Money depositCeiling) {
         if (accountType == null) {
-            throw new IllegalArgumentException("Le type de compte est requis pour recharger un compte.");
+            throw new FunctionalException("Le type de compte est requis pour recharger un compte.");
         }
         BankAccount account = switch (accountType) {
             case COMPTE_COURANT -> new BankAccount(id, operationFactory, Money.zero(), authorizedOverdraft, accountType);
@@ -38,7 +40,7 @@ public class BankAccountFactory {
                                         Money depositCeiling) {
 
         if (accountType == null) {
-            throw new IllegalArgumentException("Le type de compte est requis pour recharger un compte.");
+            throw new FunctionalException("Le type de compte est requis pour recharger un compte.");
         }
         BankAccount account = switch (accountType) {
             case COMPTE_COURANT -> new BankAccount(id, Money.zero(), authorizedOverdraft, operationFactory, accountType);
@@ -60,7 +62,7 @@ public class BankAccountFactory {
                                                        Money depositCeiling) {
 
         if (accountType == null) {
-            throw new IllegalArgumentException("Le type de compte est requis pour recharger un compte.");
+            throw new FunctionalException("Le type de compte est requis pour recharger un compte.");
         }
         return switch (accountType) {
             case COMPTE_COURANT -> new BankAccount(id, balance, authorizedOverdraft, operationFactory, accountType);

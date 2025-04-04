@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.infrastructure.rest.exception;
 
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
+import com.mdci.bankaccount.domain.exception.FunctionalException;
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidAmountException.class)
     public ResponseEntity<ApiErrorResponse> handleInvalidAmount(InvalidAmountException ex, HttpServletRequest request) {
         return buildResponse("InvalidAmount", ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
+    }
+
+    @ExceptionHandler(FunctionalException.class)
+    public ResponseEntity<ApiErrorResponse> handleFunctionalException(FunctionalException ex, HttpServletRequest request) {
+        return buildResponse("FunctionalException", ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
