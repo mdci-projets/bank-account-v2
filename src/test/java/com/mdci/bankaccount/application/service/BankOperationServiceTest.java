@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class BankOperationServiceTest {
+    private BankAccountLoader accountLoader;
     private IBankAccountRepository accountRepository;
     private IBankOperationRepository operationRepository;
     private BankOperationService service;
@@ -35,53 +35,44 @@ class BankOperationServiceTest {
         clock = Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC);
         accountRepository = mock(IBankAccountRepository.class);
         operationRepository = mock(IBankOperationRepository.class);
+        accountLoader = mock(BankAccountLoader.class);
         operationFactory = new BankOperationFactory(clock);
-        service = new BankOperationService(accountRepository, operationRepository);
+        service = new BankOperationService(accountLoader, accountRepository, operationRepository);
     }
 
     @Test
     void shouldDepositMoneyAndSaveOperation() {
-        // Given
         String accountId = "acc-123";
         BankAccount account = new BankAccount(accountId, operationFactory);
-        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(accountLoader.loadWithHistory(accountId)).thenReturn(account);
 
-        // When
         service.deposit(accountId, new Money(BigDecimal.valueOf(200)));
 
-        // Then
         assertEquals(BigDecimal.valueOf(200), account.getBalance());
         verify(operationRepository).save(any(BankAccount.class), any(BankOperation.class));
     }
 
     @Test
     void shouldWithdrawMoneyAndSaveOperation() {
-        // Given
         String accountId = "acc-123";
         BankAccount account = new BankAccount(accountId, operationFactory);
-        BankOperation previousDeposit = operationFactory.deposit(
-                new Money(BigDecimal.valueOf(150)));
-        List<BankOperation> operations = List.of(previousDeposit);
+        BankOperation previousDeposit = operationFactory.deposit(new Money(BigDecimal.valueOf(150)));
+        account.applyOperation(previousDeposit);
 
-        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
-        when(operationRepository.findAllByAccountId(accountId)).thenReturn(operations);
+        when(accountLoader.loadWithHistory(accountId)).thenReturn(account);
 
-        // When
         service.withdraw(accountId, new Money(BigDecimal.valueOf(50)));
 
-        // Then
         assertEquals(BigDecimal.valueOf(100), account.getBalance());
         verify(operationRepository).save(any(BankAccount.class), any(BankOperation.class));
     }
 
     @Test
     void shouldThrowWhenWithdrawingMoreThanBalance() {
-        // Given
         String accountId = "acc-123";
         BankAccount account = new BankAccount(accountId, operationFactory);
-        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(accountLoader.loadWithHistory(accountId)).thenReturn(account);
 
-        // Then
         assertThrows(InsufficientBalanceException.class, () ->
                 service.withdraw(accountId, new Money(BigDecimal.valueOf(100)))
         );
@@ -90,15 +81,17 @@ class BankOperationServiceTest {
 
     @Test
     void shouldThrowWhenAccountNotFoundOnDeposit() {
-        when(accountRepository.findById("not-found")).thenReturn(Optional.empty());
+        when(accountLoader.loadWithHistory("not-found"))
+                .thenThrow(new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : not-found"));
+
         assertThrows(AccountNotFoundException.class, () ->
                 service.deposit("not-found", new Money(BigDecimal.valueOf(100)))
         );
     }
 
+
     @Test
     void shouldComputeBalanceAtDate() {
-        // Given
         String accountId = "acc-123";
         LocalDate date = LocalDate.of(2025, 1, 10);
 
@@ -113,10 +106,8 @@ class BankOperationServiceTest {
         when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
         when(operationRepository.findAllByAccountIdUntilDate(accountId, date)).thenReturn(operations);
 
-        // When
         BigDecimal balance = service.getBalanceAtDate(accountId, date);
 
-        // Then
         assertEquals(BigDecimal.valueOf(70), balance);
     }
 
@@ -130,7 +121,6 @@ class BankOperationServiceTest {
 
     @Test
     void shouldAllowWithdrawalWhenWithinAuthorizedOverdraft() {
-        // Given
         String accountId = UUID.randomUUID().toString();
         BigDecimal overdraft = BigDecimal.valueOf(100);
         BigDecimal initialBalance = BigDecimal.ZERO;
@@ -142,20 +132,16 @@ class BankOperationServiceTest {
                 new Money(overdraft)
         );
 
-        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
-        when(operationRepository.findAllByAccountId(accountId)).thenReturn(new ArrayList<>());
+        when(accountLoader.loadWithHistory(accountId)).thenReturn(account);
 
-        // When
         service.withdraw(accountId, new Money(BigDecimal.valueOf(100)));
 
-        // Then
         assertEquals(BigDecimal.valueOf(-100), account.getBalance());
         verify(operationRepository, times(1)).save(any(), any());
     }
 
     @Test
     void shouldThrowWhenWithdrawalExceedsAuthorizedOverdraft() {
-        // Given
         String accountId = UUID.randomUUID().toString();
         BankAccount account = new BankAccount(
                 accountId,
@@ -164,16 +150,12 @@ class BankOperationServiceTest {
                 new Money(BigDecimal.valueOf(100))
         );
 
-        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
-        when(operationRepository.findAllByAccountId(accountId)).thenReturn(new ArrayList<>());
+        when(accountLoader.loadWithHistory(accountId)).thenReturn(account);
 
-        // Then
         assertThrows(InsufficientBalanceException.class, () ->
                 service.withdraw(accountId, new Money(BigDecimal.valueOf(101)))
         );
 
         verify(operationRepository, never()).save(any(), any());
     }
-
-
 }

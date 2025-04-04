@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,26 +25,25 @@ class BankAccountServiceTest {
     private BankAccountService service;
     private BankOperationFactory operationFactory;
     private Clock clock;
+    private BankAccountLoader accountLoader;
 
     @BeforeEach
     void setUp() {
         repository = mock(IBankAccountRepository.class);
         operationRepository = mock(IBankOperationRepository.class);
+        accountLoader = mock(BankAccountLoader.class);
         clock = Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC);
         operationFactory = new BankOperationFactory(clock);
-        service = new BankAccountService(operationRepository, repository, operationFactory, clock);
+        service = new BankAccountService(operationRepository, repository, operationFactory, clock, accountLoader);
     }
 
     @Test
     void shouldCreateAccountAndSaveIt() {
-        // Given
         when(repository.save(any(BankAccount.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
         BankAccount account = service.createAccount(new Money(BigDecimal.ZERO), new Money(BigDecimal.ZERO));
 
-        // Then
         assertNotNull(account.getId());
         assertEquals(0, account.getBalance().compareTo(BigDecimal.ZERO));
         verify(repository).save(account);
@@ -54,26 +51,21 @@ class BankAccountServiceTest {
 
     @Test
     void shouldRetrieveAccountById() {
-        // Given
         String accountId = UUID.randomUUID().toString();
         BankAccount account = new BankAccount(accountId, operationFactory);
-        when(repository.findById(accountId)).thenReturn(Optional.of(account));
-        when(operationRepository.findAllByAccountId(accountId)).thenReturn(new ArrayList<>());
+        when(accountLoader.loadWithHistory(accountId)).thenReturn(account);
 
-        // When
         BankAccount result = service.getAccount(accountId);
 
-        // Then
         assertEquals(accountId, result.getId());
     }
 
     @Test
     void shouldThrowWhenAccountNotFound() {
-        // Given
         String accountId = "not-exist-id";
-        when(repository.findById(accountId)).thenReturn(Optional.empty());
+        when(accountLoader.loadWithHistory(accountId))
+                .thenThrow(new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : " + accountId));
 
-        // Then
         AccountNotFoundException exception = assertThrows(AccountNotFoundException.class, () ->
                 service.getAccount(accountId));
         assertEquals("Aucun compte trouvé pour l'identifiant : " + accountId, exception.getMessage());

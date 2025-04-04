@@ -62,6 +62,10 @@ public class BankAccount {
         return List.copyOf(operations);
     }
 
+    public BankOperationFactory getOperationFactory() {
+        return operationFactory;
+    }
+
     public BankOperation deposit(Money amount) {
         this.balance = this.balance.add(amount.amount());
         BankOperation operation = operationFactory.deposit(amount);
@@ -96,7 +100,7 @@ public class BankAccount {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void loadOperations(List<BankOperation> operations) {
+    void loadOperations(List<BankOperation> operations) {
         if (operations == null) {
             throw new IllegalArgumentException("La liste des opérations ne peut pas être nulle.");
         }

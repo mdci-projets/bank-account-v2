@@ -31,7 +31,7 @@ public class BankAccountFactory {
         return account;
     }
 
-    private static BigDecimal computeBalanceFromOperations(List<BankOperation> operations) {
+    public static BigDecimal computeBalanceFromOperations(List<BankOperation> operations) {
         BigDecimal balance = BigDecimal.ZERO;
         for (BankOperation op : operations) {
             switch (op.type()) {

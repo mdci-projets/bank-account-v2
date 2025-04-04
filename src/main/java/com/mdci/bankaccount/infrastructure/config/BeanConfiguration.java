@@ -1,5 +1,6 @@
 package com.mdci.bankaccount.infrastructure.config;
 
+import com.mdci.bankaccount.application.service.BankAccountLoader;
 import com.mdci.bankaccount.application.service.BankAccountService;
 import com.mdci.bankaccount.application.service.BankOperationService;
 import com.mdci.bankaccount.domain.model.BankOperationFactory;
@@ -37,17 +38,25 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IBankAccountService bankAccountService(IBankOperationRepository operationRepository,
-                                                  IBankAccountRepository repository,
-                                                  BankOperationFactory operationFactory,
-                                                  Clock clock) {
-        return new BankAccountService(operationRepository, repository, operationFactory, clock);
+    public BankAccountLoader accountLoader(IBankAccountRepository accountRepository,
+                                           IBankOperationRepository operationRepository)  {
+        return new BankAccountLoader(accountRepository, operationRepository);
     }
 
     @Bean
-    public IBankOperationService bankOperationService(IBankAccountRepository accountRepository,
+    public IBankAccountService bankAccountService(IBankOperationRepository operationRepository,
+                                                  IBankAccountRepository repository,
+                                                  BankOperationFactory operationFactory,
+                                                  Clock clock,
+                                                  BankAccountLoader accountLoader) {
+        return new BankAccountService(operationRepository, repository, operationFactory, clock, accountLoader);
+    }
+
+    @Bean
+    public IBankOperationService bankOperationService(BankAccountLoader accountLoader,
+                                                      IBankAccountRepository accountRepository,
                                                       IBankOperationRepository operationRepository) {
-        return new BankOperationService(accountRepository, operationRepository);
+        return new BankOperationService(accountLoader, accountRepository, operationRepository);
     }
 
     @Bean
