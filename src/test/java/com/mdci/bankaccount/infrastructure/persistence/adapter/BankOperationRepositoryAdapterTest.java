@@ -10,6 +10,7 @@ import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntit
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankOperationJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankOperationEntityMapper;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,7 @@ class BankOperationRepositoryAdapterTest {
         fakeAccount = new BankAccountEntity();
         fakeAccount.setId("acc-123");
 
-        factory = new BankOperationFactory(Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC));
+        factory = new FakeBankOperationFactory(Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC));
     }
 
     @Test

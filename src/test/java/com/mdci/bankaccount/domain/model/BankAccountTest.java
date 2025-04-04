@@ -2,6 +2,7 @@ package com.mdci.bankaccount.domain.model;
 
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class BankAccountTest {
     @BeforeEach
     void setUp() {
         fixedClock = Clock.fixed(Instant.parse("2025-01-01T10:00:00Z"), ZoneOffset.UTC);
-        operationFactory = new BankOperationFactory(fixedClock);
+        operationFactory = new FakeBankOperationFactory(fixedClock);
         account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
     }
 
@@ -91,7 +92,7 @@ class BankAccountTest {
     void shouldReturnUnmodifiableHistoryList() {
         // Given
         Clock fixedClock = Clock.fixed(Instant.parse("2025-01-01T10:00:00Z"), ZoneOffset.UTC);
-        operationFactory = new BankOperationFactory(fixedClock);
+        operationFactory = new FakeBankOperationFactory(fixedClock);
         BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
 
         account.deposit(new Money(BigDecimal.valueOf(100)));
@@ -107,7 +108,7 @@ class BankAccountTest {
     @Test
     void shouldRegisterDepositAtFixedDate() {
         Clock fixedClock = Clock.fixed(Instant.parse("2025-01-01T10:00:00Z"), ZoneOffset.UTC);
-        operationFactory = new BankOperationFactory(fixedClock);
+        operationFactory = new FakeBankOperationFactory(fixedClock);
         BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory);
 
         account.deposit(new Money(BigDecimal.valueOf(100)));
@@ -166,7 +167,7 @@ class BankAccountTest {
     void shouldApplyDepositOperationCorrectly() {
         // Given
         Clock fixedClock = Clock.fixed(Instant.parse("2025-04-10T14:30:00Z"), ZoneOffset.UTC);
-        BankOperationFactory factory = new BankOperationFactory(fixedClock);
+        BankOperationFactory factory = new FakeBankOperationFactory(fixedClock);
         BankAccount account = new BankAccount("acc-123", factory);
 
         BankOperation operation = new BankOperation(
@@ -190,7 +191,7 @@ class BankAccountTest {
     void shouldApplyWithdrawalOperationCorrectly() {
         // Given
         Clock fixedClock = Clock.fixed(Instant.parse("2025-04-10T14:30:00Z"), ZoneOffset.UTC);
-        BankOperationFactory factory = new BankOperationFactory(fixedClock);
+        BankOperationFactory factory = new FakeBankOperationFactory(fixedClock);
         BankAccount account = BankAccountFactory.create("acc-456", new Money(BigDecimal.valueOf(200)), new Money(BigDecimal.ZERO), factory, AccountType.COMPTE_COURANT, new Money(BigDecimal.ZERO));
 
         BankOperation withdrawal = new BankOperation(

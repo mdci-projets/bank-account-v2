@@ -6,6 +6,7 @@ import com.mdci.bankaccount.domain.model.BankOperationFactory;
 import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +35,7 @@ class BankAccountServiceTest {
         operationRepository = mock(IBankOperationRepository.class);
         accountLoader = mock(BankAccountLoader.class);
         clock = Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC);
-        operationFactory = new BankOperationFactory(clock);
+        operationFactory = new FakeBankOperationFactory(clock);
         service = new BankAccountService(operationRepository, repository, operationFactory, clock, accountLoader);
     }
 

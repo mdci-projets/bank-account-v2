@@ -9,6 +9,7 @@ import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaReposit
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankOperationJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankAccountEntityMapper;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankOperationEntityMapper;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ class BankRepositoryIntegrationTest {
     @BeforeEach
     void setUp() {
         clock = Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC);
-        factory = new BankOperationFactory(clock);
+        factory = new FakeBankOperationFactory(clock);
 
         accountRepository = new BankAccountRepositoryAdapter(
                 accountJpaRepository,

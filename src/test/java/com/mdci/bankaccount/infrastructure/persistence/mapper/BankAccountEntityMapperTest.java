@@ -3,6 +3,7 @@ package com.mdci.bankaccount.infrastructure.persistence.mapper;
 import com.mdci.bankaccount.domain.model.*;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntity;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class BankAccountEntityMapperTest {
     @BeforeEach
     void setUp() {
         clock = Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC);
-        operationFactory = new BankOperationFactory(clock);
+        operationFactory = new FakeBankOperationFactory(clock);
         mapper = new BankAccountEntityMapper();
     }
 

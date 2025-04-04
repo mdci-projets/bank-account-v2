@@ -8,12 +8,14 @@ import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.integration.util.DatabaseCleanup;
+import com.mdci.bankaccount.integration.util.TestBankOperationFactoryConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Import(TestBankOperationFactoryConfig.class)
 class BankAccountIntegrationTest {
     public final static Money DEPOSIT_CEILING = Money.of(BigDecimal.valueOf(22950));
 

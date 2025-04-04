@@ -7,6 +7,7 @@ import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankAccountEntityMapper;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +30,7 @@ class BankAccountRepositoryAdapterTest {
     void setUp() {
         jpaRepository = mock(BankAccountJpaRepository.class);
         BankAccountEntityMapper mapper = new BankAccountEntityMapper(); // non utilisé ici mais requis par signature
-        factory = new BankOperationFactory(Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC));
+        factory = new FakeBankOperationFactory(Clock.fixed(Instant.parse("2025-01-01T00:00:00Z"), ZoneOffset.UTC));
         adapter = new BankAccountRepositoryAdapter(jpaRepository, mapper, factory);
     }
 

@@ -8,6 +8,7 @@ import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import com.mdci.bankaccount.domain.port.in.IBankOperationService;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
+import com.mdci.bankaccount.infrastructure.operation.DefaultBankOperationFactory;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankAccountRepositoryAdapter;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankOperationRepositoryAdapter;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
@@ -34,12 +35,12 @@ public class BeanConfiguration {
 
     @Bean
     public BankOperationFactory bankOperationFactory(Clock clock) {
-        return new BankOperationFactory(clock);
+        return new DefaultBankOperationFactory(clock);
     }
 
     @Bean
     public BankAccountLoader accountLoader(IBankAccountRepository accountRepository,
-                                           IBankOperationRepository operationRepository)  {
+                                           IBankOperationRepository operationRepository) {
         return new BankAccountLoader(accountRepository, operationRepository);
     }
 

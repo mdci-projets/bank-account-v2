@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.domain.model;
 
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
+import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ class BankOperationTest {
     void shouldCreateDepositOperationWithValidAmountAndClock() {
         // Given
         Money amount = new Money(BigDecimal.valueOf(100));
-        BankOperationFactory operationFactory = new BankOperationFactory(fixedClock);
+        BankOperationFactory operationFactory = new FakeBankOperationFactory(fixedClock);
 
         // When
         BankOperation operation = operationFactory.deposit(amount);
