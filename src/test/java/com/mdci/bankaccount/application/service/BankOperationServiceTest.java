@@ -4,7 +4,7 @@ import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
 import com.mdci.bankaccount.domain.exception.InsufficientBalanceException;
 import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.BankOperation;
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;

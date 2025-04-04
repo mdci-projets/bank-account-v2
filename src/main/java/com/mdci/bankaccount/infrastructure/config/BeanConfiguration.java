@@ -5,7 +5,7 @@ import com.mdci.bankaccount.application.service.BankAccountLoader;
 import com.mdci.bankaccount.application.service.BankAccountService;
 import com.mdci.bankaccount.application.service.BankAccountStatementService;
 import com.mdci.bankaccount.application.service.BankOperationService;
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import com.mdci.bankaccount.domain.port.in.IBankAccountStatementService;
 import com.mdci.bankaccount.domain.port.in.IBankOperationService;

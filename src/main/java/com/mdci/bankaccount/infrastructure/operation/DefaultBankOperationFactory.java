@@ -1,7 +1,7 @@
 package com.mdci.bankaccount.infrastructure.operation;
 
 import com.mdci.bankaccount.domain.model.BankOperation;
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.model.Money;
 
 import java.time.Clock;

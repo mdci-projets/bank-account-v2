@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.domain.model;
 
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.junit.jupiter.api.Test;
 

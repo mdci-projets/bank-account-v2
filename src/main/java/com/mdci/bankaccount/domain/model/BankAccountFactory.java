@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.domain.model;
 
 import com.mdci.bankaccount.domain.exception.FunctionalException;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 
 import java.math.BigDecimal;
 import java.util.List;

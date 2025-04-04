@@ -1,6 +1,6 @@
 package com.mdci.bankaccount.integration.util;
 
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.testutil.FakeBankOperationFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

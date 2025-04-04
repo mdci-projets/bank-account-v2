@@ -3,6 +3,7 @@ package com.mdci.bankaccount.application.service;
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
 import com.mdci.bankaccount.domain.exception.FunctionalException;
 import com.mdci.bankaccount.domain.model.*;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import com.mdci.bankaccount.testutil.FakeBankOperationFactory;

@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.infrastructure.persistence.mapper;
 
 import com.mdci.bankaccount.domain.model.*;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntity;
 import com.mdci.bankaccount.testutil.FakeBankOperationFactory;

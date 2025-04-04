@@ -2,7 +2,7 @@ package com.mdci.bankaccount.testutil;
 
 import com.mdci.bankaccount.domain.model.BankOperation;
 import com.mdci.bankaccount.domain.model.Money;
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 
 import java.time.Clock;
 import java.time.LocalDateTime;

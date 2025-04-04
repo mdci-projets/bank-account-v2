@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.infrastructure.persistence;
 
 import com.mdci.bankaccount.domain.model.*;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankAccountRepositoryAdapter;
