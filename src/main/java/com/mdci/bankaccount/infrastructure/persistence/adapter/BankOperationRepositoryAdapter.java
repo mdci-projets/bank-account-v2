@@ -12,6 +12,7 @@ import com.mdci.bankaccount.infrastructure.persistence.mapper.BankOperationEntit
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,5 +54,11 @@ public class BankOperationRepositoryAdapter implements IBankOperationRepository 
         return operationRepository.findAllByAccountId(accountId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    // TODO A implementer avec la persistance!
+    @Override
+    public List<BankOperation> findAllByAccountIdBetweenDates(String accountId, LocalDateTime from, LocalDateTime to) {
+        return new ArrayList<>();
     }
 }
