@@ -1,10 +1,12 @@
 package com.mdci.bankaccount.application.dto;
 
+import com.mdci.bankaccount.application.validation.ValidAccountCreation;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Pattern;
 
 import java.math.BigDecimal;
 
+@ValidAccountCreation
 public record CreateAccountRequestDTO(
         @DecimalMin(value = "0.0", inclusive = true, message = "{bank.operation.balance.positive}")
         BigDecimal initialBalance,
@@ -16,10 +18,6 @@ public record CreateAccountRequestDTO(
     public CreateAccountRequestDTO {
         if (authorizedOverdraft == null) {
             authorizedOverdraft = BigDecimal.ZERO;
-        }
-
-        if ("LIVRET".equals(accountType) && authorizedOverdraft.compareTo(BigDecimal.ZERO) > 0) {
-            throw new IllegalArgumentException("Un livret ne peut pas avoir de découvert autorisé.");
         }
     }
 
