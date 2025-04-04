@@ -1,14 +1,24 @@
-# Utiliser une image Java officielle
-FROM openjdk:17-jdk-slim
+# ----------- Étape 1 : Build de l'application ----------------
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier le fichier JAR dans l'image
-COPY target/*.jar app.jar
+# Copier uniquement les fichiers nécessaires à la compilation
+COPY pom.xml .
+COPY src ./src
 
-# Exposer le port de l'application
-EXPOSE 8082
+RUN mvn clean package -DskipTests
 
-# Démarrer l'application
-CMD ["java", "-jar", "app.jar"]
+# ----------- Étape 2 : Image de prod (runtime uniquement) ----
+FROM eclipse-temurin:21-jre-alpine
+
+RUN addgroup -S bank && adduser -S bankuser -G bank
+USER bankuser:bank
+
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

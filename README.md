@@ -26,19 +26,19 @@ Le cahier des charges et les règles du kata se trouvent ici :
 
 ## Stack technique
 
-| Composant       | Technologie                         |
-|-----------------|-------------------------------------|
-| Langage         | Java 17                             |
-| Build tool      | Maven                               |
-| Framework       | Spring Boot 3 (à venir)             |
-| Base de données | H2 (in-memory, à venir)             |
-| Mapping         | MapStruct (à venir)                 |
-| Validation      | Jakarta Validation (à venir)        |
-| Tests unitaires | JUnit 5, Mockito                    |
-| Tests intégrés  | Testcontainers (à venir)            |
-| CI/CD           | GitLab CI                           |
-| Containerisation| Docker (à venir)                    |
-| Documentation   | Swagger / OpenAPI (à venir)         |
+| Composant       | Technologie                  |
+|-----------------|------------------------------|
+| Langage         | Java 21                      |
+| Build tool      | Maven                        |
+| Framework       | Spring Boot 3 (à venir)      |
+| Base de données | H2 (in-memory, à venir)      |
+| Mapping         | MapStruct (à venir)          |
+| Validation      | Jakarta Validation (à venir) |
+| Tests unitaires | JUnit 5, Mockito             |
+| Tests intégrés  | Testcontainers (à venir)     |
+| CI/CD           | GitLab CI                    |
+| Containerisation| Docker (à venir)             |
+| Documentation   | Swagger / OpenAPI (à venir)  |
 
 ---
 
@@ -54,35 +54,48 @@ src/ ├── main/java/com/example/bankaccount/
 
 ---
 
-## Fonctionnalités
+## Fonctionnalités terminées
 
-- ✅ Créer un compte bancaire
-- ✅ Déposer de l'argent
-- ✅ Retirer de l'argent (avec vérification de solde)
-- ✅ Règles métier encapsulées (Value Object `Money`)
-- ✅ Couverture par tests unitaires (TDD)
-
----
-
-## Lancer les tests
-
-```bash
-mvn clean test
-```
-
-## 🛠️ En cours / TODO
 - [x] Créer la logique métier autour du compte bancaire
 - [x] Ajout des historiques d'opérations pour les comptes
 - [x] Extraire une factory `BankOperationFactory` pour injecter `Clock` et UUID
 - [x] Développer la couche service avec `BankAccountService` & `BankOperationService`
 - [x] Créer la persistance avec JPA
 - [x] Ajout de DTOs avec MapStruct
-- [x] Exposer l'API REST (Spring Boot)
+- [x] Exposition des services via une API REST documentée avec Swagger
 - [x] Validation des entrées via @Valid
 - [x] Tests d'intégration SpringBootTest
-- [ ] Containerisation Docker
+- [x] Containerisation Docker
 - [x] Pipeline CI/CD complète GitLab
-- [x] Documentation Swagger
+- [x] Gestion centralisée des erreurs avec un GlobalExceptionHandler
+- [x] Gestion du découvert autorisé sur les comptes courants
+- [x] Intégration du livret d’épargne avec règles de dépôt/retrait spécifiques
+- [x] Génération du relevé bancaire mensuel glissant
+
+---
+
+## Améliorations prévues
+- [ ]  Ajout de logs métiers et techniques (via SLF4J/Logback)
+- [ ] Déploiement du projet sur AWS (EC2 ou Elastic Beanstalk)
+- [ ] Ajout d’une authentification JWT pour sécuriser les endpoints
+- [ ] Surveillance et métriques avec Spring Actuator / Prometheus / Grafana
+- [ ] Passer sur une base de donnée PostgreSQL par exemple
+- [ ] Augmenter la couverture de test (tests de mapping, de configuration, etc.)
+- [ ] Utilisation de Testcontainers pour les tests d'intégration avec PostgreSQL
+
+---
+
+## À venir
+
+- Implémentation de notifications (par e-mail ou webhook)
+- Historique enrichi : catégorisation, libellés, exports PDF
+- Multi-comptes et agrégation par utilisateur
+
+## Lancer les tests
+
+```bash
+mvn clean test
+```
 
 ## Auteur
 Ce projet est développé par Youssef Massaoudi dans le cadre d’un kata technique avec engagement qualité élevé

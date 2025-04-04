@@ -9,11 +9,12 @@ cache:
   paths:
     - .m2/repository
 
-# Étape 1 : tests unitaires
+# Étape 1 : tests
 test:
   stage: test
-  image: maven:3.9.6-eclipse-temurin-17
+  image: maven:3.9.6-eclipse-temurin-21
   script:
+    - java -version
     - mvn clean verify
   artifacts:
     reports:
@@ -24,8 +25,9 @@ test:
 # Étape 2 : build du jar Spring Boot
 build:
   stage: build
-  image: maven:3.9.6-eclipse-temurin-17
+  image: maven:3.9.6-eclipse-temurin-21
   script:
+    - java -version
     - mvn clean package -DskipTests
   artifacts:
     paths:
