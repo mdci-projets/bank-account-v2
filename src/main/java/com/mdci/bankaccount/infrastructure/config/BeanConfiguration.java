@@ -1,5 +1,6 @@
 package com.mdci.bankaccount.infrastructure.config;
 
+import com.mdci.bankaccount.application.mapper.StatementMapper;
 import com.mdci.bankaccount.application.service.BankAccountLoader;
 import com.mdci.bankaccount.application.service.BankAccountService;
 import com.mdci.bankaccount.application.service.BankAccountStatementService;
@@ -84,6 +85,11 @@ public class BeanConfiguration {
                                                             BankAccountJpaRepository accJpa,
                                                             BankOperationEntityMapper mapper) {
         return new BankOperationRepositoryAdapter(opJpa, accJpa, mapper);
+    }
+
+    @Bean
+    public StatementMapper statementMapper() {
+        return new StatementMapper();
     }
 
     @Bean
