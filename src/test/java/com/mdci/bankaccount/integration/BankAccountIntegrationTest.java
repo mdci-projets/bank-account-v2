@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mdci.bankaccount.application.dto.BankAccountResponseDTO;
 import com.mdci.bankaccount.application.dto.CreateAccountRequestDTO;
 import com.mdci.bankaccount.domain.model.BankAccount;
+import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.integration.util.DatabaseCleanup;
 import org.junit.jupiter.api.Assertions;
@@ -23,7 +24,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class BankAccountIntegrationTest {
+    public final static Money DEPOSIT_CEILING = Money.of(BigDecimal.valueOf(22950));
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +55,7 @@ class BankAccountIntegrationTest {
     @Test
     void shouldCreateAndRetrieveAccount() throws Exception {
         // Création
-        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO request = CreateAccountRequestDTO.of(
                 new BigDecimal("0"),
                 new BigDecimal("0")
         );
@@ -74,12 +75,12 @@ class BankAccountIntegrationTest {
         mockMvc.perform(get("/api/account/" + dto.id()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(dto.id())))
-                .andExpect(jsonPath("$.balance", is(0)));
+                .andExpect(jsonPath("$.balance", is(0.0)));
     }
 
     @Test
     void should_create_account_and_extract_account_number() throws Exception {
-        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO request = CreateAccountRequestDTO.of(
                 new BigDecimal("100"),
                 new BigDecimal("50")
         );

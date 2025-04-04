@@ -14,36 +14,48 @@ public class BankAccount {
     private final WithdrawalPolicy withdrawalPolicy;
     private final List<BankOperation> operations;
     private final BankOperationFactory operationFactory;
+    private final AccountType accountType;
 
     public BankAccount(String id, BankOperationFactory operationFactory) {
-        this(id, operationFactory, new Money(BigDecimal.ZERO), new Money(BigDecimal.ZERO));
+        this(id, operationFactory, new Money(BigDecimal.ZERO), new Money(BigDecimal.ZERO), AccountType.COMPTE_COURANT);
     }
 
     public BankAccount(String id, BankOperationFactory operationFactory, Money initialBalance, Money authorizedOverdraft) {
+        this(id, operationFactory, initialBalance, authorizedOverdraft, AccountType.COMPTE_COURANT);
+    }
+
+    public BankAccount(String id,
+                       BankOperationFactory operationFactory,
+                       Money initialBalance,
+                       Money authorizedOverdraft,
+                       AccountType accountType) {
         if (initialBalance == null) {
             throw new InvalidAmountException("Le solde initial est obligatoire.");
         }
         if (initialBalance.isNegative()) {
             throw new InvalidAmountException("Le solde initial ne peut pas être négatif.");
         }
+
         this.id = id;
         this.operations = new ArrayList<>();
         this.operationFactory = operationFactory;
-        this.authorizedOverdraft = authorizedOverdraft != null ? authorizedOverdraft : new Money(BigDecimal.ZERO);
+        this.authorizedOverdraft = authorizedOverdraft != null ? authorizedOverdraft : Money.zero();
         this.withdrawalPolicy = WithdrawalPolicyFactory.create(this);
+        this.accountType = accountType != null ? accountType : AccountType.COMPTE_COURANT;
         this.balance = BigDecimal.ZERO;
-        if (initialBalance != null && initialBalance.amount().compareTo(BigDecimal.ZERO) > 0) {
-            this.deposit(initialBalance);
-        }
     }
 
-    BankAccount(String id, Money balance, Money authorizedOverdraft, BankOperationFactory factory) {
+    BankAccount(String id, Money balance, Money authorizedOverdraft, BankOperationFactory operationFactory) {
+        this(id, balance, authorizedOverdraft, operationFactory, AccountType.COMPTE_COURANT);
+    }
+    BankAccount(String id, Money balance, Money authorizedOverdraft, BankOperationFactory operationFactory, AccountType accountType) {
         this.id = id;
         this.balance = balance.amount();
-        this.operationFactory = factory;
+        this.operationFactory = operationFactory;
         this.authorizedOverdraft = authorizedOverdraft != null ? authorizedOverdraft : Money.zero();
         this.withdrawalPolicy = WithdrawalPolicyFactory.create(this);
         this.operations = new ArrayList<>();
+        this.accountType = accountType;
     }
 
     public String getId() {
@@ -64,6 +76,10 @@ public class BankAccount {
 
     public BankOperationFactory getOperationFactory() {
         return operationFactory;
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
     }
 
     public BankOperation deposit(Money amount) {

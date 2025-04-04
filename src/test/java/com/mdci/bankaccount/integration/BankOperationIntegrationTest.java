@@ -48,7 +48,7 @@ class BankOperationIntegrationTest {
     @Test
     void shouldDepositMoneyToAccount() throws Exception {
         // Création d’un compte
-        CreateAccountRequestDTO requestAccount = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO requestAccount = CreateAccountRequestDTO.of(
                 new BigDecimal("0.00"),
                 new BigDecimal("0.00")
         );
@@ -82,7 +82,7 @@ class BankOperationIntegrationTest {
 
     @Test
     void shouldReturn400IfInvalidAmount() throws Exception {
-        CreateAccountRequestDTO requestAccount = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO requestAccount = CreateAccountRequestDTO.of(
                 new BigDecimal("0.00"),
                 new BigDecimal("0.00")
         );
@@ -114,7 +114,7 @@ class BankOperationIntegrationTest {
     @Test
     void shouldReturn400IfInsufficientBalance() throws Exception {
         // Création d’un compte
-        CreateAccountRequestDTO requestCreateAccount = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO requestCreateAccount = CreateAccountRequestDTO.of(
                 new BigDecimal("0.00"),
                 new BigDecimal("0.00")
         );
@@ -137,7 +137,7 @@ class BankOperationIntegrationTest {
     @Test
     void shouldReturn400IfMissingField() throws Exception {
         // Création d’un compte
-        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO request = CreateAccountRequestDTO.of(
                 new BigDecimal("0.00"),
                 new BigDecimal("0.00")
         );
@@ -159,7 +159,7 @@ class BankOperationIntegrationTest {
     @Test
     void shouldKeepAccountBalanceInSyncWithOperations() throws Exception {
         // Création d’un compte
-        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO request = CreateAccountRequestDTO.of(
                 new BigDecimal("0.00"),
                 new BigDecimal("0.00")
         );
@@ -191,7 +191,7 @@ class BankOperationIntegrationTest {
     @Test
     void shouldReturn400IfBalanceAtDateParamIsInvalid() throws Exception {
         // Création d’un compte
-        CreateAccountRequestDTO request = new CreateAccountRequestDTO(
+        CreateAccountRequestDTO request = CreateAccountRequestDTO.of(
                 new BigDecimal("0.00"),
                 new BigDecimal("0.00")
         );

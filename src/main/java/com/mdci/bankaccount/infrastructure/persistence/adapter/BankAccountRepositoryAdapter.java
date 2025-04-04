@@ -6,6 +6,7 @@ import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
 import com.mdci.bankaccount.infrastructure.persistence.mapper.BankAccountEntityMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -23,16 +24,18 @@ public class BankAccountRepositoryAdapter implements IBankAccountRepository {
     }
 
     @Override
+    @Transactional
     public BankAccount save(BankAccount account) {
         BankAccountEntity entity = mapper.toEntity(account);
 
         BankAccountEntity saved = jpaRepository.save(entity);
-        return new BankAccount(saved.getId(), operationFactory);
+
+        return mapper.toDomainWithBalanceOnly(saved, operationFactory, account.getHistory());
     }
 
     @Override
     public Optional<BankAccount> findById(String id) {
         return jpaRepository.findByIdWithOperations(id)
-                .map(entity -> mapper.toDomainWithBalanceOnly(entity, operationFactory));
+                .map(entity -> mapper.toDomain(entity, operationFactory));
     }
 }

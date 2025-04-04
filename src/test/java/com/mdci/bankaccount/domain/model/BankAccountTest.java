@@ -119,8 +119,7 @@ class BankAccountTest {
     @Test
     void should_allow_withdrawal_with_authorized_overdraft() {
         // Given
-        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, new Money(BigDecimal.valueOf(100)), new Money(BigDecimal.valueOf(50)));
-
+        BankAccount account = BankAccountFactory.create(UUID.randomUUID().toString(), new Money(BigDecimal.valueOf(100)), new Money(BigDecimal.valueOf(50)), operationFactory, AccountType.COMPTE_COURANT, new Money(BigDecimal.ZERO));
         // When
         account.withdraw(new Money(BigDecimal.valueOf(150)));
 
@@ -156,7 +155,7 @@ class BankAccountTest {
     @Test
     void should_create_account_with_authorized_overdraft() {
         // When
-        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, new Money(BigDecimal.valueOf(50)), new Money(BigDecimal.valueOf(100)));
+        BankAccount account = BankAccountFactory.create(UUID.randomUUID().toString(), new Money(BigDecimal.valueOf(50)), new Money(BigDecimal.valueOf(100)), operationFactory, AccountType.COMPTE_COURANT, new Money(BigDecimal.ZERO));
 
         // Then
         assertThat(account.getBalance()).isEqualTo(BigDecimal.valueOf(50));
@@ -192,7 +191,7 @@ class BankAccountTest {
         // Given
         Clock fixedClock = Clock.fixed(Instant.parse("2025-04-10T14:30:00Z"), ZoneOffset.UTC);
         BankOperationFactory factory = new BankOperationFactory(fixedClock);
-        BankAccount account = new BankAccount("acc-456", factory, new Money(BigDecimal.valueOf(200)), new Money(BigDecimal.ZERO));
+        BankAccount account = BankAccountFactory.create("acc-456", new Money(BigDecimal.valueOf(200)), new Money(BigDecimal.ZERO), factory, AccountType.COMPTE_COURANT, new Money(BigDecimal.ZERO));
 
         BankOperation withdrawal = new BankOperation(
                 "op-002",

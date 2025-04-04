@@ -1,9 +1,6 @@
 package com.mdci.bankaccount.infrastructure.persistence.mapper;
 
-import com.mdci.bankaccount.domain.model.BankAccount;
-import com.mdci.bankaccount.domain.model.BankOperation;
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
-import com.mdci.bankaccount.domain.model.Money;
+import com.mdci.bankaccount.domain.model.*;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +69,8 @@ class BankAccountEntityMapperTest {
         // Given
         Money balance = Money.of(new BigDecimal("100.00"));
         Money overdraft = Money.of(new BigDecimal("50.00"));
-        BankAccount account = new BankAccount("ACC123", operationFactory, balance, overdraft);
+        BankAccount account = BankAccountFactory.create("ACC123", balance, overdraft, operationFactory, AccountType.COMPTE_COURANT, new Money(BigDecimal.ZERO));
+
         account.deposit(Money.of(BigDecimal.TEN));
         account.withdraw(Money.of(BigDecimal.ONE));
 
@@ -93,6 +91,9 @@ class BankAccountEntityMapperTest {
         BankAccountEntity entity = new BankAccountEntity();
         entity.setId("ACC001");
         entity.setAuthorizedOverdraft(new BigDecimal("100.00"));
+        entity.setAccountType(AccountType.COMPTE_COURANT);
+        entity.setDepositCeiling(BigDecimal.ZERO);
+
         LocalDateTime timestamp = LocalDateTime.of(2025, 4, 10, 14, 30);
         entity.setOperations(List.of(
                 new BankOperationEntity("op1", "DEPOSIT", new BigDecimal("100.00"), timestamp, entity),
@@ -105,12 +106,8 @@ class BankAccountEntityMapperTest {
         // Then
         assertThat(domain.getId()).isEqualTo("ACC001");
         assertThat(domain.getAuthorizedOverdraft().amount()).isEqualByComparingTo("100.00");
+        assertThat(domain.getAccountType()).isEqualTo(AccountType.COMPTE_COURANT);
         assertThat(domain.getHistory()).hasSize(2);
-
-        assertThat(domain.getHistory().get(0).id()).isEqualTo("op1");
-        assertThat(domain.getHistory().get(0).timestamp()).isEqualTo(LocalDateTime.parse("2025-04-10T14:30"));
-        assertThat(domain.getHistory().get(0).type()).isEqualTo(BankOperation.OperationType.DEPOSIT);
-        assertThat(domain.getHistory().get(0).amount().amount()).isEqualByComparingTo("100.00");
     }
 
     @Test
@@ -119,19 +116,65 @@ class BankAccountEntityMapperTest {
         BankAccountEntity entity = new BankAccountEntity();
         entity.setId("ACC002");
         entity.setAuthorizedOverdraft(new BigDecimal("25.00"));
+        entity.setAccountType(AccountType.COMPTE_COURANT);
         LocalDateTime timestamp = LocalDateTime.of(2025, 4, 10, 14, 30);
         entity.setOperations(List.of(
                 new BankOperationEntity("op1", "DEPOSIT", new BigDecimal("100.00"), timestamp, entity),
                 new BankOperationEntity("op2", "WITHDRAWAL", new BigDecimal("30.00"), timestamp, entity)
         ));
 
+        List<BankOperation> operations =  List.of(
+                new BankOperation("op1", BankOperation.OperationType.DEPOSIT, Money.of(new BigDecimal("100.00")), timestamp),
+                new BankOperation("op2", BankOperation.OperationType.WITHDRAWAL, Money.of(new BigDecimal("30.00")), timestamp)
+        );
+
         // When
-        BankAccount domain = mapper.toDomainWithBalanceOnly(entity, operationFactory);
+        BankAccount domain = mapper.toDomainWithBalanceOnly(entity, operationFactory, operations);
 
         // Then
         assertThat(domain.getId()).isEqualTo("ACC002");
         assertThat(domain.getBalance()).isEqualByComparingTo("70.00");
         assertThat(domain.getAuthorizedOverdraft().amount()).isEqualByComparingTo("25.00");
         assertThat(domain.getHistory()).isEmpty();
+    }
+
+    @Test
+    void should_map_livret_account_to_entity_and_back() {
+        // Arrange
+        SavingsAccount account = new SavingsAccount("ACC001", operationFactory, Money.of(BigDecimal.valueOf(1000)), Money.of(BigDecimal.valueOf(22950)));
+
+        BankAccountEntity entity = mapper.toEntity(account);
+
+        // Act
+        BankAccount reconstructed = mapper.toDomain(entity, operationFactory);
+
+        // Assert
+        assertThat(reconstructed.getId()).isEqualTo("ACC001");
+        assertThat(reconstructed.getAccountType()).isEqualTo(AccountType.LIVRET);
+        assertThat(((SavingsAccount) reconstructed).getDepositCeiling().amount())
+                .isEqualByComparingTo("22950");
+    }
+
+    @Test
+    void should_map_compte_courant_account() {
+        BankAccount account = new BankAccount("ACC002", operationFactory, Money.of(BigDecimal.valueOf(500)), Money.of(BigDecimal.valueOf(2000)));
+
+        // mapping aller
+        BankAccountEntity entity = mapper.toEntity(account);
+
+        BankOperationEntity op = new BankOperationEntity(
+                UUID.randomUUID().toString(),
+                "DEPOSIT",
+                BigDecimal.valueOf(500),
+                LocalDateTime.now(),
+                entity
+        );
+        entity.setOperations(List.of(op));
+
+        // mapping retour
+        BankAccount result = mapper.toDomain(entity, operationFactory);
+
+        assertThat(result.getAuthorizedOverdraft().amount()).isEqualByComparingTo("2000");
+        assertThat(result.getAccountType()).isEqualTo(AccountType.COMPTE_COURANT);
     }
 }

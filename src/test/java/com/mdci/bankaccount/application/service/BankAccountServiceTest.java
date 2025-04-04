@@ -8,6 +8,7 @@ import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -46,7 +47,13 @@ class BankAccountServiceTest {
 
         assertNotNull(account.getId());
         assertEquals(0, account.getBalance().compareTo(BigDecimal.ZERO));
-        verify(repository).save(account);
+
+        ArgumentCaptor<BankAccount> captor = ArgumentCaptor.forClass(BankAccount.class);
+        verify(repository).save(captor.capture());
+
+        BankAccount savedAccount = captor.getValue();
+        assertEquals(account.getId(), savedAccount.getId());
+        assertEquals(account.getBalance(), savedAccount.getBalance());
     }
 
     @Test

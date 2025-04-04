@@ -1,9 +1,7 @@
 package com.mdci.bankaccount.application.service;
 
 import com.mdci.bankaccount.domain.exception.AccountNotFoundException;
-import com.mdci.bankaccount.domain.model.BankAccount;
-import com.mdci.bankaccount.domain.model.BankAccountFactory;
-import com.mdci.bankaccount.domain.model.BankOperation;
+import com.mdci.bankaccount.domain.model.*;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 
@@ -30,7 +28,9 @@ public class BankAccountLoader {
                 base.getId(),
                 base.getOperationFactory(),
                 base.getAuthorizedOverdraft(),
-                history
+                history,
+                base.getAccountType(),
+                getDepositCeiling(base)
         );
     }
 
@@ -38,16 +38,23 @@ public class BankAccountLoader {
         BankAccount base = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Aucun compte trouvé pour l'identifiant : " + accountId));
 
-        List<BankOperation> history = operationRepository.findAllByAccountId(accountId);
+        // on va juste reconstituer le solde sans les opérations
+        Money balance = new Money(base.getBalance());
 
-
-
-
-        return BankAccountFactory.rehydrate(
+        return BankAccountFactory.rehydrateWithBalanceOnly(
                 base.getId(),
                 base.getOperationFactory(),
+                balance,
                 base.getAuthorizedOverdraft(),
-                history
+                base.getAccountType(),
+                getDepositCeiling(base)
         );
+    }
+
+    private Money getDepositCeiling(BankAccount base) {
+        if (base instanceof SavingsAccount savingsAccount) {
+            return savingsAccount.getDepositCeiling();
+        }
+        return Money.zero();
     }
 }

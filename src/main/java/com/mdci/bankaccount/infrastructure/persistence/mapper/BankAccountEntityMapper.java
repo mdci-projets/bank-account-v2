@@ -1,10 +1,6 @@
 package com.mdci.bankaccount.infrastructure.persistence.mapper;
 
-import com.mdci.bankaccount.domain.model.BankAccount;
-import com.mdci.bankaccount.domain.model.BankAccountFactory;
-import com.mdci.bankaccount.domain.model.BankOperation;
-import com.mdci.bankaccount.domain.model.BankOperationFactory;
-import com.mdci.bankaccount.domain.model.Money;
+import com.mdci.bankaccount.domain.model.*;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankAccountEntity;
 import com.mdci.bankaccount.infrastructure.persistence.entity.BankOperationEntity;
 
@@ -19,6 +15,11 @@ public class BankAccountEntityMapper {
         entity.setId(account.getId());
         entity.setAuthorizedOverdraft(account.getAuthorizedOverdraft().amount());
         entity.setCurrency("EUR");
+        entity.setAccountType(account.getAccountType());
+
+        if (account instanceof SavingsAccount savings) {
+            entity.setDepositCeiling(savings.getDepositCeiling().amount());
+        }
 
         List<BankOperationEntity> operationEntities = account.getHistory().stream()
                 .map(op -> toOperationEntity(op, entity))
@@ -33,25 +34,38 @@ public class BankAccountEntityMapper {
         List<BankOperation> operations = entity.getOperations().stream()
                 .map(this::toOperation)
                 .collect(Collectors.toList());
-        Money overdraft = Money.of(entity.getAuthorizedOverdraft());
-        return BankAccountFactory.rehydrate(entity.getId(), factory, overdraft, operations);
+
+        return BankAccountFactory.rehydrate(
+                entity.getId(),
+                factory,
+                Money.of(entity.getAuthorizedOverdraft()),
+                operations,
+                entity.getAccountType(),
+                Money.of(entity.getDepositCeiling() != null ? entity.getDepositCeiling() : BigDecimal.ZERO)
+        );
     }
 
-    public BankAccount toDomainWithBalanceOnly(BankAccountEntity entity, BankOperationFactory factory) {
-        Money overdraft = Money.of(entity.getAuthorizedOverdraft());
-        BigDecimal balance = computeBalanceFromOperations(entity.getOperations());
-        return BankAccountFactory.rehydrateWithBalanceOnly(entity.getId(), factory, Money.of(balance), overdraft);
+    public BankAccount toDomainWithBalanceOnly(BankAccountEntity entity, BankOperationFactory factory, List<BankOperation> operations) {
+        BigDecimal balance = computeBalanceFromOperations(operations);
+
+        return BankAccountFactory.rehydrateWithBalanceOnly(
+                entity.getId(),
+                factory,
+                Money.of(balance),
+                Money.of(entity.getAuthorizedOverdraft()),
+                entity.getAccountType(),
+                Money.of(entity.getDepositCeiling() != null ? entity.getDepositCeiling() : BigDecimal.ZERO)
+        );
     }
 
-    private BigDecimal computeBalanceFromOperations(List<BankOperationEntity> operations) {
+    private BigDecimal computeBalanceFromOperations(List<BankOperation> operations) {
         BigDecimal balance = BigDecimal.ZERO;
-        for (BankOperationEntity op : operations) {
-            switch (BankOperation.OperationType.valueOf(op.getType())) {
-                case DEPOSIT -> balance = balance.add(op.getAmount());
-                case WITHDRAWAL -> balance = balance.add(op.getAmount().negate());
+        for (BankOperation op : operations) {
+            switch (BankOperation.OperationType.valueOf(op.type().name())) {
+                case DEPOSIT -> balance = balance.add(op.amount().amount());
+                case WITHDRAWAL -> balance = balance.subtract(op.amount().amount());
             }
         }
-
         return balance;
     }
 

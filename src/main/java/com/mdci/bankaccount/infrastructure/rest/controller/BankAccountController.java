@@ -3,6 +3,7 @@ package com.mdci.bankaccount.infrastructure.rest.controller;
 import com.mdci.bankaccount.application.dto.BankAccountResponseDTO;
 import com.mdci.bankaccount.application.dto.CreateAccountRequestDTO;
 import com.mdci.bankaccount.application.mapper.BankAccountMapper;
+import com.mdci.bankaccount.domain.model.AccountType;
 import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.Money;
 import com.mdci.bankaccount.domain.port.in.IBankAccountService;
@@ -44,7 +45,8 @@ public class BankAccountController {
     public ResponseEntity<BankAccountResponseDTO> createAccount(@RequestBody @Valid CreateAccountRequestDTO request) {
         BankAccount account = accountService.createAccount(
                 new Money(request.initialBalance()),
-                new Money(request.authorizedOverdraft())
+                new Money(request.authorizedOverdraft()),
+                AccountType.valueOf(request.accountType())
         );
         return ResponseEntity.ok(mapper.toResponseDTO(account));
     }

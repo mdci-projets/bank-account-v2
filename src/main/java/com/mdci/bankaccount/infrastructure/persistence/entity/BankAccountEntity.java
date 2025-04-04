@@ -1,5 +1,6 @@
 package com.mdci.bankaccount.infrastructure.persistence.entity;
 
+import com.mdci.bankaccount.domain.model.AccountType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -17,6 +18,11 @@ public class BankAccountEntity {
 
     @Column(name = "authorized_overdraft", nullable = false)
     private BigDecimal authorizedOverdraft = BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
+
+    private BigDecimal depositCeiling;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<BankOperationEntity> operations = new ArrayList<>();
@@ -51,6 +57,22 @@ public class BankAccountEntity {
 
     public void setAuthorizedOverdraft(BigDecimal authorizedOverdraft) {
         this.authorizedOverdraft = authorizedOverdraft;
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(AccountType accountType) {
+        this.accountType = accountType;
+    }
+
+    public BigDecimal getDepositCeiling() {
+        return depositCeiling;
+    }
+
+    public void setDepositCeiling(BigDecimal depositCeiling) {
+        this.depositCeiling = depositCeiling;
     }
 
     public List<BankOperationEntity> getOperations() {

@@ -1,5 +1,6 @@
 package com.mdci.bankaccount.infrastructure.persistence.adapter;
 
+import com.mdci.bankaccount.domain.model.AccountType;
 import com.mdci.bankaccount.domain.model.BankAccount;
 import com.mdci.bankaccount.domain.model.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
@@ -38,6 +39,7 @@ class BankAccountRepositoryAdapterTest {
         BankAccount account = new BankAccount("acc-123", factory);
         BankAccountEntity savedEntity = new BankAccountEntity();
         savedEntity.setId("acc-123");
+        savedEntity.setAccountType(AccountType.COMPTE_COURANT);
         savedEntity.setCurrency("EUR");
 
         when(jpaRepository.save(any())).thenReturn(savedEntity);
@@ -61,6 +63,7 @@ class BankAccountRepositoryAdapterTest {
         String accountId = "acc-456";
         BankAccountEntity entity = new BankAccountEntity();
         entity.setId(accountId);
+        entity.setAccountType(AccountType.COMPTE_COURANT);
         entity.setCurrency("EUR");
 
         when(jpaRepository.findByIdWithOperations(accountId)).thenReturn(Optional.of(entity));

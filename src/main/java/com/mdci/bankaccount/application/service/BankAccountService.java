@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class BankAccountService implements IBankAccountService {
-
     private final IBankAccountRepository repository;
     private final IBankOperationRepository operationRepository;
     private final BankOperationFactory operationFactory;
@@ -28,15 +27,27 @@ public class BankAccountService implements IBankAccountService {
 
     @Override
     public BankAccount createAccount(Money initialBalance, Money authorizedOverdraft) {
-        BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, initialBalance, authorizedOverdraft);
-        BankOperation initOp = null;
-        if (!account.getHistory().isEmpty()) {
-            initOp = account.getHistory().get(0);
-        }
+        return createAccount(initialBalance, authorizedOverdraft, AccountType.COMPTE_COURANT);
+    }
+
+    @Override
+    public BankAccount createAccount(Money initialBalance, Money authorizedOverdraft, AccountType accountType) {
+        BankAccount account = BankAccountFactory.create(
+                UUID.randomUUID().toString(),
+                initialBalance,
+                authorizedOverdraft,
+                operationFactory,
+                accountType,
+                BankAccountFactory.DEPOSIT_CEILING
+        );
+
+        BankOperation initOp = account.getHistory().isEmpty() ? null : account.getHistory().get(0);
+
+        // Persistance
         account = repository.save(account);
+
         if (initOp != null) {
             operationRepository.save(account, initOp);
-            account = BankAccountFactory.rehydrateWithBalanceOnly(account.getId(), account.getOperationFactory(), initialBalance, account.getAuthorizedOverdraft());
         }
         return account;
     }
