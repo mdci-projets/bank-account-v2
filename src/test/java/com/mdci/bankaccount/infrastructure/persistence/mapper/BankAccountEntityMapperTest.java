@@ -10,15 +10,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BankAccountEntityMapperTest {
 
@@ -43,6 +43,13 @@ class BankAccountEntityMapperTest {
 
         // When
         BankAccountEntity entity = mapper.toEntity(account);
+
+        // Simuler la génération d'ID des opérations par JPA
+        int i = 0;
+        for (BankOperationEntity opEntity : entity.getOperations()) {
+            opEntity.setId(UUID.randomUUID().toString());
+            opEntity.setTimestamp(LocalDateTime.of(2025, 1, 1, 0, 0).plusMinutes(i++));
+        }
         BankAccount mappedBack = mapper.toDomain(entity, operationFactory);
 
         // Then
@@ -75,7 +82,8 @@ class BankAccountEntityMapperTest {
         // Then
         assertThat(entity.getId()).isEqualTo("ACC123");
         assertThat(entity.getAuthorizedOverdraft()).isEqualByComparingTo("50.00");
-        assertThat(entity.getOperations()).hasSize(2);
+        // Il ya aussi l'opération du solde initiale
+        assertThat(entity.getOperations()).hasSize(3);
 
     }
 

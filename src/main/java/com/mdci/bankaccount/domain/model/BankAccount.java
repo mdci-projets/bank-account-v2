@@ -3,7 +3,6 @@ package com.mdci.bankaccount.domain.model;
 import com.mdci.bankaccount.domain.exception.InvalidAmountException;
 
 import java.math.BigDecimal;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +20,30 @@ public class BankAccount {
     }
 
     public BankAccount(String id, BankOperationFactory operationFactory, Money initialBalance, Money authorizedOverdraft) {
+        if (initialBalance == null) {
+            throw new InvalidAmountException("Le solde initial est obligatoire.");
+        }
         if (initialBalance.isNegative()) {
             throw new InvalidAmountException("Le solde initial ne peut pas être négatif.");
         }
         this.id = id;
-        this.balance = initialBalance != null ? initialBalance.amount() : BigDecimal.ZERO;
         this.operations = new ArrayList<>();
         this.operationFactory = operationFactory;
         this.authorizedOverdraft = authorizedOverdraft != null ? authorizedOverdraft : new Money(BigDecimal.ZERO);
         this.withdrawalPolicy = WithdrawalPolicyFactory.create(this);
+        this.balance = BigDecimal.ZERO;
+        if (initialBalance != null && initialBalance.amount().compareTo(BigDecimal.ZERO) > 0) {
+            this.deposit(initialBalance);
+        }
+    }
+
+    BankAccount(String id, Money balance, Money authorizedOverdraft, BankOperationFactory factory) {
+        this.id = id;
+        this.balance = balance.amount();
+        this.operationFactory = factory;
+        this.authorizedOverdraft = authorizedOverdraft != null ? authorizedOverdraft : Money.zero();
+        this.withdrawalPolicy = WithdrawalPolicyFactory.create(this);
+        this.operations = new ArrayList<>();
     }
 
     public String getId() {
@@ -92,16 +106,5 @@ public class BankAccount {
 
         // Recalcule le solde à partir de l'historique complet
         this.balance = computeBalanceFromOperations(operations);
-    }
-
-    public static BankAccount forTest(String accountId, BankOperationFactory factory, Money overdraft, List<BankOperation> operations) {
-        BankAccount account = new BankAccount(accountId, factory, new Money(BigDecimal.ZERO), overdraft);
-
-        operations.forEach(bankOperation -> account.applyOperation(bankOperation));
-        return account;
-    }
-
-    public static BankAccount forTest(String accountId, Clock clock, List<BankOperation> operations) {
-        return forTest(accountId, new BankOperationFactory(clock), new Money(BigDecimal.ZERO), operations);
     }
 }

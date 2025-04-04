@@ -206,8 +206,9 @@ class BankAccountTest {
 
         // Then
         assertEquals(BigDecimal.valueOf(150), account.getBalance());
-        assertEquals(1, account.getHistory().size());
-        assertEquals("op-002", account.getHistory().get(0).id());
+        // Il ya aussi l'opération du solde initiale
+        assertEquals(2, account.getHistory().size());
+        assertEquals("op-002", account.getHistory().get(1).id());
     }
 
 }

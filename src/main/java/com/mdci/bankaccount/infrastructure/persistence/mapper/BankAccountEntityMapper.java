@@ -1,6 +1,7 @@
 package com.mdci.bankaccount.infrastructure.persistence.mapper;
 
 import com.mdci.bankaccount.domain.model.BankAccount;
+import com.mdci.bankaccount.domain.model.BankAccountFactory;
 import com.mdci.bankaccount.domain.model.BankOperation;
 import com.mdci.bankaccount.domain.model.BankOperationFactory;
 import com.mdci.bankaccount.domain.model.Money;
@@ -33,13 +34,13 @@ public class BankAccountEntityMapper {
                 .map(this::toOperation)
                 .collect(Collectors.toList());
         Money overdraft = Money.of(entity.getAuthorizedOverdraft());
-        return BankAccount.forTest(entity.getId(), factory, overdraft, operations);
+        return BankAccountFactory.rehydrate(entity.getId(), factory, overdraft, operations);
     }
 
     public BankAccount toDomainWithBalanceOnly(BankAccountEntity entity, BankOperationFactory factory) {
         Money overdraft = Money.of(entity.getAuthorizedOverdraft());
         BigDecimal balance = computeBalanceFromOperations(entity.getOperations());
-        return new BankAccount(entity.getId(), factory, new Money(balance), overdraft);
+        return BankAccountFactory.rehydrateWithBalanceOnly(entity.getId(), factory, Money.of(balance), overdraft);
     }
 
     private BigDecimal computeBalanceFromOperations(List<BankOperationEntity> operations) {
@@ -56,7 +57,7 @@ public class BankAccountEntityMapper {
 
     private BankOperationEntity toOperationEntity(BankOperation op, BankAccountEntity parent) {
         return new BankOperationEntity(
-                op.id(),
+                null,
                 op.type().name(),
                 op.amount().amount(),
                 op.timestamp(),

@@ -39,6 +39,10 @@ class BankAccountServiceTest {
 
     @Test
     void shouldCreateAccountAndSaveIt() {
+        // Given
+        when(repository.save(any(BankAccount.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
         // When
         BankAccount account = service.createAccount(new Money(BigDecimal.ZERO), new Money(BigDecimal.ZERO));
 

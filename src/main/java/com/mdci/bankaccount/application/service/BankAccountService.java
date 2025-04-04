@@ -31,7 +31,14 @@ public class BankAccountService implements IBankAccountService {
     @Override
     public BankAccount createAccount(Money initialBalance, Money authorizedOverdraft) {
         BankAccount account = new BankAccount(UUID.randomUUID().toString(), operationFactory, initialBalance, authorizedOverdraft);
-        repository.save(account);
+        BankOperation initOp = null;
+        if (!account.getHistory().isEmpty()) {
+            initOp = account.getHistory().get(0);
+        }
+        account = repository.save(account);
+        if (initOp != null) {
+            operationRepository.save(account, initOp);
+        }
         return account;
     }
 
