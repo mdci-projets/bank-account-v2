@@ -71,24 +71,29 @@ src/ ├── main/java/com/example/bankaccount/
 - [x] Gestion du découvert autorisé sur les comptes courants
 - [x] Intégration du livret d’épargne avec règles de dépôt/retrait spécifiques
 - [x] Génération du relevé bancaire mensuel glissant
+- [x] Génération des relevés bancaires PDF complets et structurés à partir des opérations du compte.
 
 ---
 
 ## Améliorations prévues
-- [ ]  Ajout de logs métiers et techniques (via SLF4J/Logback)
+- [ ] Amélioration de la gestion d'erreurs pour la génerations des PDF (relevé bancaire mensuel glissant)
+- [ ] Envoi automatique (relevé bancaire) par email avec pièce jointe PDF
+- [ ] Ajout de logs métiers et techniques (via SLF4J/Logback)
 - [ ] Déploiement du projet sur AWS (EC2 ou Elastic Beanstalk)
 - [ ] Ajout d’une authentification JWT pour sécuriser les endpoints
 - [ ] Surveillance et métriques avec Spring Actuator / Prometheus / Grafana
 - [ ] Passer sur une base de donnée PostgreSQL par exemple
 - [ ] Augmenter la couverture de test (tests de mapping, de configuration, etc.)
 - [ ] Utilisation de Testcontainers pour les tests d'intégration avec PostgreSQL
+- [ ] Utiliser SonarLint pour détecter les code smells
+- [ ] API non versionnée (bonne pratique à ajouter)
 
 ---
 
 ## À venir
 
 - Implémentation de notifications (par e-mail ou webhook)
-- Historique enrichi : catégorisation, libellés, exports PDF
+- Historique enrichi : catégorisation, libellés
 - Multi-comptes et agrégation par utilisateur
 
 ## Build & 🔍 Test
