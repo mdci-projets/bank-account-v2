@@ -60,9 +60,12 @@ public class GlobalExceptionHandler {
 
         if ("date".equals(paramName) && ex.getRequiredType() == LocalDate.class) {
             message = "La date fournie est invalide. Format attendu : yyyy-MM-dd (LocalDate).";
+        } else if (List.of("from", "to").contains(paramName) && ex.getRequiredType() == LocalDateTime.class) {
+            message = "La date fournie est invalide. Format attendu : yyyy-MM-dd'T'HH:mm:ss (LocalDateTime).";
         } else {
             message = "La valeur fournie est invalide. Type attendu : " + ex.getRequiredType().getSimpleName();
         }
+
         return buildResponse("TypeMismatch", message, HttpStatus.BAD_REQUEST, request.getRequestURI());
     }
 

@@ -1,17 +1,19 @@
 package com.mdci.bankaccount.infrastructure.config;
 
 import com.mdci.bankaccount.application.mapper.StatementMapper;
+import com.mdci.bankaccount.application.port.out.PdfGenerator;
 import com.mdci.bankaccount.application.service.BankAccountLoader;
 import com.mdci.bankaccount.application.service.BankAccountService;
 import com.mdci.bankaccount.application.service.BankAccountStatementService;
 import com.mdci.bankaccount.application.service.BankOperationService;
-import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.in.IBankAccountService;
 import com.mdci.bankaccount.domain.port.in.IBankAccountStatementService;
 import com.mdci.bankaccount.domain.port.in.IBankOperationService;
+import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import com.mdci.bankaccount.infrastructure.operation.DefaultBankOperationFactory;
+import com.mdci.bankaccount.infrastructure.pdf.PdfStatementGenerator;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankAccountRepositoryAdapter;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankOperationRepositoryAdapter;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
@@ -90,6 +92,11 @@ public class BeanConfiguration {
     @Bean
     public StatementMapper statementMapper() {
         return new StatementMapper();
+    }
+
+    @Bean
+    public PdfGenerator pdfStatementGenerator() {
+        return new PdfStatementGenerator();
     }
 
     @Bean
