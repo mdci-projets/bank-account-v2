@@ -26,19 +26,19 @@ Le cahier des charges et les règles du kata se trouvent ici :
 
 ## Stack technique
 
-| Composant       | Technologie                  |
-|-----------------|------------------------------|
-| Langage         | Java 21                      |
-| Build tool      | Maven                        |
-| Framework       | Spring Boot 3 (à venir)      |
-| Base de données | H2 (in-memory, à venir)      |
-| Mapping         | MapStruct (à venir)          |
-| Validation      | Jakarta Validation (à venir) |
-| Tests unitaires | JUnit 5, Mockito             |
-| Tests intégrés  | Testcontainers (à venir)     |
-| CI/CD           | GitLab CI                    |
-| Containerisation| Docker (à venir)             |
-| Documentation   | Swagger / OpenAPI (à venir)  |
+| Composant       | Technologie         |
+|-----------------|---------------------|
+| Langage         | Java 21             |
+| Build tool      | Maven               |
+| Framework       | Spring Boot 3       |
+| Base de données | H2 (in-memory)      |
+| Mapping         | MapStruct           |
+| Validation      | Jakarta Validation  |
+| Tests unitaires | JUnit 5, Mockito    |
+| Tests intégrés  | Testcontainers      |
+| CI/CD           | GitLab CI           |
+| Containerisation| Docker              |
+| Documentation   | Swagger / OpenAPI   |
 
 ---
 
@@ -91,11 +91,92 @@ src/ ├── main/java/com/example/bankaccount/
 - Historique enrichi : catégorisation, libellés, exports PDF
 - Multi-comptes et agrégation par utilisateur
 
-## Lancer les tests
+## Build & 🔍 Test
+
+### Prérequis
+
+- Java 21 installé (`java -version`)
+- Maven 3.9+ (`mvn -v`)
+
+---
+
+### Builder le projet
 
 ```bash
-mvn clean test
+mvn clean install
 ```
 
+Cela compile le code, lance les tests et construit le JAR du projet.
+
+### Lancer uniquement les tests
+
+```bash
+mvn test
+```
+
+### Démarrer l'application localement
+
+```bash
+mvn spring-boot:run
+```
+L'application sera disponible sur : 
+```bash
+http://localhost:8080
+```
+
+### Accéder à la documentation Swagger
+
+Une fois l'application démarrée, Swagger est accessible à l'adresse suivante :
+```bash
+http://localhost:8080/swagger-ui.html
+```
+
+### Nettoyer le projet
+
+```bash
+mvn clean
+```
+
+---
+
+## Déploiement avec Docker
+
+### Construire l’image Docker
+
+Assurez-vous que le projet a été compilé (`mvn clean install`) avant de construire l’image.
+
+```bash
+docker build -t bankaccount-app .
+```
+
+### Lancer le conteneur
+
+```bash
+docker run -d -p 8080:8080 --name bankaccount bankaccount-app
+```
+L’application sera accessible à l’adresse :
+```bash
+http://localhost:8080
+```
+
+### Accéder à Swagger dans le conteneur
+
+```bash
+http://localhost:8080/swagger-ui.html
+```
+
+### Arrêter et supprimer le conteneur
+
+```bash
+docker stop bankaccount && docker rm bankaccount
+```
+
+### Supprimer l’image Docker
+
+```bash
+docker rmi bankaccount-app
+```
+
+---
 ## Auteur
 Ce projet est développé par Youssef Massaoudi dans le cadre d’un kata technique avec engagement qualité élevé
