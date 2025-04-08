@@ -23,6 +23,7 @@
         <java.version>21</java.version>
         <junit.jupiter.version>5.10.1</junit.jupiter.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <maven>3.9.6</maven>
     </properties>
 
     <dependencies>

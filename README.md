@@ -96,14 +96,25 @@ src/ ├── main/java/com/example/bankaccount/
 - Historique enrichi : catégorisation, libellés
 - Multi-comptes et agrégation par utilisateur
 
+---
+
 ## Build & 🔍 Test
 
 ### Prérequis
 
 - Java 21 installé (`java -version`)
 - Maven 3.9+ (`mvn -v`)
+- 
+### Commandes utiles
 
----
+| Action                   | Commande                          |
+|--------------------------|-----------------------------------|
+| Compiler le projet       | `./mvnw clean compile`            |
+| Lancer les tests         | `./mvnw clean test`               |
+| Générer le jar           | `./mvnw clean package`            |
+| Lancer l’application     | `./mvnw spring-boot:run`          |
+| Vérifier les dépendances | `./mvnw dependency:tree`          |
+
 
 ### Builder le projet
 
