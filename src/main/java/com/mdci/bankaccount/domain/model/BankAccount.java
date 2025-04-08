@@ -94,7 +94,6 @@ public class BankAccount {
     public BankOperation withdraw(Money amount) {
         withdrawalPolicy.checkWithdrawal(this, amount);
         this.balance = this.balance.subtract(amount.amount());
-        ;
         BankOperation operation = operationFactory.withdrawal(amount);
         this.operations.add(operation);
         return operation;

@@ -2,7 +2,7 @@ package com.mdci.bankaccount.infrastructure.rest.controller;
 
 import com.mdci.bankaccount.application.dto.AccountStatementDTO;
 import com.mdci.bankaccount.application.mapper.StatementMapper;
-import com.mdci.bankaccount.application.port.out.PdfGenerator;
+import com.mdci.bankaccount.application.port.out.DocumentGenerator;
 import com.mdci.bankaccount.domain.model.AccountStatement;
 import com.mdci.bankaccount.domain.port.in.IBankAccountStatementService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,13 +28,13 @@ public class BankAccountStatementController {
 
     private final IBankAccountStatementService statementService;
     private final StatementMapper statementMapper;
-    private final PdfGenerator<AccountStatementDTO> pdfGenerator;
+    private final DocumentGenerator<AccountStatementDTO> documentGenerator;
 
     public BankAccountStatementController(IBankAccountStatementService statementService, StatementMapper statementMapper,
-                                          PdfGenerator<AccountStatementDTO> pdfGenerator) {
+                                          DocumentGenerator<AccountStatementDTO> documentGenerator) {
         this.statementService = statementService;
         this.statementMapper = statementMapper;
-        this.pdfGenerator = pdfGenerator;
+        this.documentGenerator = documentGenerator;
     }
 
     @Operation(
@@ -81,7 +81,7 @@ public class BankAccountStatementController {
         AccountStatement statement = statementService.generateStatementForPeriod(id, from, to);
         AccountStatementDTO dto = statementMapper.toDto(statement);
 
-        byte[] pdfBytes = pdfGenerator.generate(dto);
+        byte[] pdfBytes = documentGenerator.generate(dto);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=releve-" + id + ".pdf")

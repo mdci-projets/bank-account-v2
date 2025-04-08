@@ -1,7 +1,7 @@
 package com.mdci.bankaccount.infrastructure.config;
 
 import com.mdci.bankaccount.application.mapper.StatementMapper;
-import com.mdci.bankaccount.application.port.out.PdfGenerator;
+import com.mdci.bankaccount.application.port.out.DocumentGenerator;
 import com.mdci.bankaccount.application.service.BankAccountLoader;
 import com.mdci.bankaccount.application.service.BankAccountService;
 import com.mdci.bankaccount.application.service.BankAccountStatementService;
@@ -13,7 +13,7 @@ import com.mdci.bankaccount.domain.port.out.BankOperationFactory;
 import com.mdci.bankaccount.domain.port.out.IBankAccountRepository;
 import com.mdci.bankaccount.domain.port.out.IBankOperationRepository;
 import com.mdci.bankaccount.infrastructure.operation.DefaultBankOperationFactory;
-import com.mdci.bankaccount.infrastructure.pdf.PdfStatementGenerator;
+import com.mdci.bankaccount.infrastructure.pdf.DocumentStatementGenerator;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankAccountRepositoryAdapter;
 import com.mdci.bankaccount.infrastructure.persistence.adapter.BankOperationRepositoryAdapter;
 import com.mdci.bankaccount.infrastructure.persistence.jpa.BankAccountJpaRepository;
@@ -95,8 +95,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public PdfGenerator pdfStatementGenerator() {
-        return new PdfStatementGenerator();
+    public DocumentGenerator pdfStatementGenerator() {
+        return new DocumentStatementGenerator();
     }
 
     @Bean

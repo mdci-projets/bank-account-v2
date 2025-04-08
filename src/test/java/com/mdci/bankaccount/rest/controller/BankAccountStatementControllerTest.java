@@ -3,7 +3,7 @@ package com.mdci.bankaccount.rest.controller;
 
 import com.mdci.bankaccount.application.dto.AccountStatementDTO;
 import com.mdci.bankaccount.application.mapper.StatementMapper;
-import com.mdci.bankaccount.application.port.out.PdfGenerator;
+import com.mdci.bankaccount.application.port.out.DocumentGenerator;
 import com.mdci.bankaccount.application.service.BankAccountStatementService;
 import com.mdci.bankaccount.domain.model.AccountStatement;
 import com.mdci.bankaccount.domain.model.AccountType;
@@ -41,7 +41,7 @@ class BankAccountStatementControllerTest {
     private StatementMapper statementMapper;
 
     @Autowired
-    private PdfGenerator<AccountStatementDTO> pdfGenerator;
+    private DocumentGenerator<AccountStatementDTO> documentGenerator;
 
     @TestConfiguration
     static class MockConfig {
@@ -56,8 +56,8 @@ class BankAccountStatementControllerTest {
         }
 
         @Bean
-        public PdfGenerator<AccountStatementDTO> pdfGenerator() {
-            return mock(PdfGenerator.class);
+        public DocumentGenerator<AccountStatementDTO> pdfGenerator() {
+            return mock(DocumentGenerator.class);
         }
     }
 
@@ -78,7 +78,7 @@ class BankAccountStatementControllerTest {
         when(statementService.generateStatementForPeriod(eq(accountId), any(), any()))
                 .thenReturn(mock(AccountStatement.class));
         when(statementMapper.toDto(any())).thenReturn(dto);
-        when(pdfGenerator.generate(any())).thenReturn("fake-pdf-content".getBytes());
+        when(documentGenerator.generate(any())).thenReturn("fake-pdf-content".getBytes());
 
         mockMvc.perform(get("/api/account/{id}/statement/export/pdf", accountId))
                 .andExpect(status().isOk())

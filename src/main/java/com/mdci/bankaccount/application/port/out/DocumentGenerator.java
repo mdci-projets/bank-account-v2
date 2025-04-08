@@ -1,5 +1,5 @@
 package com.mdci.bankaccount.application.port.out;
 
-public interface PdfGenerator<T> {
+public interface DocumentGenerator<T> {
     byte[] generate(T dto);
 }

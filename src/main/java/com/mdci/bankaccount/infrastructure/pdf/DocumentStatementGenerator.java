@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
-import com.mdci.bankaccount.application.port.out.PdfGenerator;
+import com.mdci.bankaccount.application.port.out.DocumentGenerator;
 
-public class PdfStatementGenerator implements PdfGenerator<AccountStatementDTO> {
+public class DocumentStatementGenerator implements DocumentGenerator<AccountStatementDTO> {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
